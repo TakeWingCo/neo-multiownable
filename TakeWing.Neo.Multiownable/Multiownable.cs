@@ -8,7 +8,7 @@ using System.Numerics;
 
 namespace TakeWing.Neo.Multiownable
 {
-    public class Multiownable
+    public static class Multiownable
     {
 		
     }
