@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Numerics;
+using Neo.SmartContract.Framework;
+using Neo.SmartContract.Framework.Services.Neo;
 
 
 namespace TakeWing.Neo.Multiownable
@@ -19,7 +21,7 @@ namespace TakeWing.Neo.Multiownable
 		/// <returns>Number of owners</returns>
 		public static Byte GetNumberOfOwners()
 		{
-			throw new NotImplementedException();
+			return Storage.Get(Storage.CurrentContext, "NumberOfOwners")[0];
 		}
 
 		/// <summary>
@@ -29,7 +31,10 @@ namespace TakeWing.Neo.Multiownable
 		/// <returns>Public key of owner</returns>
 		public static Byte[] GetOwnerByIndex(Byte index)
 		{
-			throw new NotImplementedException();
+			var key = "Owners".AsByteArray();
+			key.Append(index);
+
+			return Storage.Get(Storage.CurrentContext, key);
 		}
 
 		/// <summary>
@@ -39,7 +44,10 @@ namespace TakeWing.Neo.Multiownable
 		/// <returns>Owner's index</returns>
 		public static Byte GetIndexByOwner(Byte[] owner)
 		{
-			throw new NotImplementedException();
+			var key = "IndexesOfOwners".AsByteArray();
+			key = key.Concat(owner);
+
+			return Storage.Get(Storage.CurrentContext, key)[0];
 		}
 
 		/// <summary>
@@ -48,7 +56,9 @@ namespace TakeWing.Neo.Multiownable
 		/// <returns>Generation of owners number</returns>
 		public static UInt64 GetGenerationOfOwners()
 		{
-			throw new NotImplementedException();
+			UInt64 a;
+			
+			return (UInt64)Storage.Get(Storage.CurrentContext, "GenerationOfOwners").AsBigInteger();
 		}
 
 		/// <summary>
