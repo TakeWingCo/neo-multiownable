@@ -3,7 +3,7 @@ using System.Linq;
 using Neo.VM;
 using Neo.SmartContract.Framework;
 using Neo.SmartContract.Framework.Services.Neo;
-
+using System.Numerics;
 
 namespace TakeWing.Neo.Multiownable
 {
@@ -107,14 +107,31 @@ namespace TakeWing.Neo.Multiownable
 			if (!IsOwner(initiator))
 				return false;
 
-			if (GetNumberOfOwners() > 0)
+			byte ownersCount = GetNumberOfOwners();
+			if (ownersCount > 0)
 			{
-				// TODO : Clear current list of owners.
+				// Clear current list of owners.
+				for (byte i = 0; i < ownersCount; i++)
+				{
+					var key = "Owners".AsByteArray();
+					key.Append(i);
+
+					Storage.Delete(Storage.CurrentContext, key);
+				}
 			}
 
-			// TODO : Set new list of owners and change generation.
+			// Set new list of owners.
+			for (byte i = 0; i < newOwners.Length; i++)
+			{
+				var key = "Owners".AsByteArray();
+				key.Append(i);
 
-			throw new NotImplementedException();
+				Storage.Put(Storage.CurrentContext, key, newOwners[i]);
+			}
+
+			// TODO : Change generation.
+
+			return true;
 		}
 
 		/// <summary>
@@ -129,10 +146,13 @@ namespace TakeWing.Neo.Multiownable
 		public static Boolean IsAcceptedBySomeOwners(Byte[] initiator, String functionSignature, Byte ownersCount, UInt32 timeout,
 			params Object[] args)
 		{
+			if (!IsOwner(initiator))
+				return false;
+
 			// Convert and concat.
 			byte[] mainArray = functionSignature.AsByteArray();
 			mainArray.Append(ownersCount);
-			//mainArray.Concat(); timeout
+			mainArray.Concat(((BigInteger)timeout).AsByteArray());
 
 			for (int i = 0; i < args.Length; i++)
 				mainArray.Concat((byte[])args[0]);
