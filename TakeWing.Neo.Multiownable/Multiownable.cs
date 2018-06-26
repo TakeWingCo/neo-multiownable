@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Numerics;
+using Neo.VM;
 using Neo.SmartContract.Framework;
 using Neo.SmartContract.Framework.Services.Neo;
 
@@ -15,6 +12,14 @@ namespace TakeWing.Neo.Multiownable
 	/// </summary>
     public static class Multiownable
     {
+		/// <summary>
+		/// Sha256 by OpCode.
+		/// </summary>
+		/// <param name="byteArray"></param>
+		/// <returns></returns>
+		[OpCode(OpCode.SHA256)]
+		public extern static Byte[] Sha256(Byte[] byteArray);
+
 		/// <summary>
 		/// Get number of owners.
 		/// </summary>
@@ -56,8 +61,6 @@ namespace TakeWing.Neo.Multiownable
 		/// <returns>Generation of owners number</returns>
 		public static UInt64 GetGenerationOfOwners()
 		{
-			UInt64 a;
-			
 			return (UInt64)Storage.Get(Storage.CurrentContext, "GenerationOfOwners").AsBigInteger();
 		}
 
@@ -67,7 +70,13 @@ namespace TakeWing.Neo.Multiownable
 		/// <returns>Array of owners</returns>
 		public static Byte[][] GetAllOwners()
 		{
-			throw new NotImplementedException();
+			byte ownersCount = GetNumberOfOwners();
+
+			byte[][] result = new byte[][] { };
+			for (byte i = 0; i < ownersCount; i++)
+				result[i] = GetOwnerByIndex(i);
+
+			return result;
 		}
 
 		/// <summary>
@@ -77,7 +86,14 @@ namespace TakeWing.Neo.Multiownable
 		/// <returns>True if public key in owners list, false else</returns>
 		public static Boolean IsOwner(Byte[] publicKey)
 		{
-			throw new NotImplementedException();
+			byte ownersCount = GetNumberOfOwners();
+			Byte[][] ownersList = GetAllOwners();
+
+			for (byte i = 0; i < ownersCount; i++)
+				if (ownersList[i] == publicKey)
+					return true;
+
+			return false;
 		}
 
 		/// <summary>
@@ -88,6 +104,16 @@ namespace TakeWing.Neo.Multiownable
 		/// <returns>Return true after successful transfer, else false</returns>
 		public static Boolean TransferOwnership(Byte[] initiator, Byte[][] newOwners)
 		{
+			if (!IsOwner(initiator))
+				return false;
+
+			if (GetNumberOfOwners() > 0)
+			{
+				// TODO : Clear current list of owners.
+			}
+
+			// TODO : Set new list of owners and change generation.
+
 			throw new NotImplementedException();
 		}
 
@@ -103,6 +129,27 @@ namespace TakeWing.Neo.Multiownable
 		public static Boolean IsAcceptedBySomeOwners(Byte[] initiator, String functionSignature, Byte ownersCount, UInt32 timeout,
 			params Object[] args)
 		{
+			// Convert and concat.
+			byte[] mainArray = functionSignature.AsByteArray();
+			mainArray.Append(ownersCount);
+			//mainArray.Concat(); timeout
+
+			for (int i = 0; i < args.Length; i++)
+				mainArray.Concat((byte[])args[0]);
+
+			// Get Sha256.
+			byte[] shaMainArray = Sha256(mainArray);
+
+			// TODO : Check timeout.
+			//uint curDate = Runtime.Time;
+
+			//if (curDate > timeout)
+			//{
+			//	return false;
+			//}
+
+			// TODO : Get all those who voted and and make a decision.
+
 			throw new NotImplementedException();
 		}
 	}
