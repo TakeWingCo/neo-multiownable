@@ -55,10 +55,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NEO-Emulator\NEO-Emulator.csproj">
-      <Project>{372429c2-71be-41c2-92d0-5a9187bc238a}</Project>
-      <Name>NEO-Emulator</Name>
-    </ProjectReference>
     <ProjectReference Include="..\TakeWing.Neo.Multiownable.SmartContractsForTests\TakeWing.Neo.Multiownable.SmartContractsForTests.csproj">
       <Project>{289eaf11-423f-47ae-9894-86cc2340004f}</Project>
       <Name>TakeWing.Neo.Multiownable.SmartContractsForTests</Name>
