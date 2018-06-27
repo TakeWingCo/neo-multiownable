@@ -137,6 +137,7 @@ namespace TakeWing.Neo.Multiownable
 			return true;
 		}
 
+		// TODO : Fix it.
 		/// <summary>
 		/// Check, that timeout doesn't expire and minimal required number of owners accepts call of function.
 		/// </summary>
@@ -163,11 +164,25 @@ namespace TakeWing.Neo.Multiownable
 			// Get Sha256.
 			byte[] shaMainArray = Sha256(mainArray);
 
-			// TODO : Check timeout.
+			// Check timeout.
+			UInt32 data = (UInt32)Storage.Get(Storage.CurrentContext, mainArray.Concat("timeout".AsByteArray())).AsBigInteger();
+			if (data > timeout)
+				return false;
 
-			// TODO : Get all those who voted and make a decision.
+			// Get all those who voted and make a decision.
+			byte numberOwners = GetNumberOfOwners();
 
-			throw new NotImplementedException();
+			byte[] voters = Storage.Get(Storage.CurrentContext, mainArray);
+			byte voted = 0;
+
+			for (byte i = 0; i < numberOwners; i++)
+				if (voters[i] == 1)
+					voted++;
+
+			if (voted < ownersCount)
+				return false;
+
+			return true;
 		}
 	}
 }
