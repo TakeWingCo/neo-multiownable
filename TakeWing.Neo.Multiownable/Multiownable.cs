@@ -1,9 +1,10 @@
 using System;
 using System.Linq;
+using System.Numerics;
 using Neo.VM;
 using Neo.SmartContract.Framework;
 using Neo.SmartContract.Framework.Services.Neo;
-using System.Numerics;
+
 
 namespace TakeWing.Neo.Multiownable
 {
@@ -129,7 +130,9 @@ namespace TakeWing.Neo.Multiownable
 				Storage.Put(Storage.CurrentContext, key, newOwners[i]);
 			}
 
-			// TODO : Change generation.
+			// Change generation.
+			UInt64 newGeneration = GetGenerationOfOwners() + 1;
+			Storage.Put(Storage.CurrentContext, "GenerationOfOwners", newGeneration);
 
 			return true;
 		}
@@ -161,14 +164,8 @@ namespace TakeWing.Neo.Multiownable
 			byte[] shaMainArray = Sha256(mainArray);
 
 			// TODO : Check timeout.
-			//uint curDate = Runtime.Time;
 
-			//if (curDate > timeout)
-			//{
-			//	return false;
-			//}
-
-			// TODO : Get all those who voted and and make a decision.
+			// TODO : Get all those who voted and make a decision.
 
 			throw new NotImplementedException();
 		}
