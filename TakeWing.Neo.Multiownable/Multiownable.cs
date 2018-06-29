@@ -14,10 +14,10 @@ namespace TakeWing.Neo.Multiownable
     public static class Multiownable
     {
 		/// <summary>
-		/// Sha256 by OpCode.
+		/// Call Sha256 by OpCode.
 		/// </summary>
-		/// <param name="byteArray"></param>
-		/// <returns></returns>
+		/// <param name="byteArray">Byte array for convert to Sha256 hash.</param>
+		/// <returns>Return SHA256 hash.</returns>
 		[OpCode(OpCode.SHA256)]
 		public extern static Byte[] Sha256(Byte[] byteArray);
 
@@ -38,7 +38,7 @@ namespace TakeWing.Neo.Multiownable
 		public static Byte[] GetOwnerByIndex(Byte index)
 		{
 			var key = "Owners".AsByteArray();
-			key.Append(index);
+			key.Concat(new byte[] { index });
 
 			return Storage.Get(Storage.CurrentContext, key);
 		}
@@ -89,7 +89,7 @@ namespace TakeWing.Neo.Multiownable
 		{
 			byte ownersCount = GetNumberOfOwners();
 			Byte[][] ownersList = GetAllOwners();
-
+			
 			for (byte i = 0; i < ownersCount; i++)
 				if (ownersList[i] == publicKey)
 					return true;
@@ -115,7 +115,7 @@ namespace TakeWing.Neo.Multiownable
 				for (byte i = 0; i < ownersCount; i++)
 				{
 					var key = "Owners".AsByteArray();
-					key.Append(i);
+					key.Concat(new byte[] { i });
 
 					Storage.Delete(Storage.CurrentContext, key);
 				}
@@ -125,7 +125,7 @@ namespace TakeWing.Neo.Multiownable
 			for (byte i = 0; i < newOwners.Length; i++)
 			{
 				var key = "Owners".AsByteArray();
-				key.Append(i);
+				key.Concat(new byte[] { i });
 
 				Storage.Put(Storage.CurrentContext, key, newOwners[i]);
 			}
@@ -152,7 +152,7 @@ namespace TakeWing.Neo.Multiownable
 			if (!IsOwner(initiator))
 				return false;
 
-			// Convert and concat.
+			// Convert and concat to one array.
 			byte[] mainArray = functionSignature.AsByteArray();
 			mainArray.Append(ownersCount);
 			mainArray.Concat(((BigInteger)timeout).AsByteArray());
@@ -161,27 +161,28 @@ namespace TakeWing.Neo.Multiownable
 			for (int i = 0; i < args.Length; i++)
 				mainArray.Concat((byte[])args[0]);
 
-			// Get Sha256.
+			// Get Sha256 hash from array.
 			byte[] shaMainArray = Sha256(mainArray);
 
+			// Check value by key, return false if value is empty.
 			var value = Storage.Get(Storage.CurrentContext, shaMainArray);
 			if (value.Length == 0)
 				return false;
 
-			// Check timeout.
+			// Check timeout and return false if time overdue.
 			UInt32 firstCallDate = (UInt32)Storage.Get(Storage.CurrentContext, shaMainArray.Concat("FirstCallDate".AsByteArray())).AsBigInteger();
-
 			UInt32 overdueDate = firstCallDate + timeout;
 
 			if (Runtime.Time > overdueDate)
 				return false;
 
-			// Get voters count, check it and make a decision.
+			// Get voters mask, check voters and make a decision.
 			byte numberOwners = GetNumberOfOwners();
 
 			byte[] votersMask = Storage.Get(Storage.CurrentContext, shaMainArray.Concat("VotersMask".AsByteArray()));
-			byte voted = 0;
 
+			// Counting owners who already voted and check it.
+			byte voted = 0;
 			for (byte i = 0; i < numberOwners; i++)
 				if (votersMask[i] == 1)
 					voted++;
