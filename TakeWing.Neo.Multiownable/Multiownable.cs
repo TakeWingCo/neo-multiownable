@@ -154,7 +154,7 @@ namespace TakeWing.Neo.Multiownable
 
 			// Convert and concat to one array.
 			byte[] mainArray = functionSignature.AsByteArray();
-			mainArray.Append(ownersCount);
+			mainArray.Concat(new byte[] { ownersCount });
 			mainArray.Concat(((BigInteger)timeout).AsByteArray());
 			mainArray.Concat(((BigInteger)GetGenerationOfOwners()).AsByteArray());
 
