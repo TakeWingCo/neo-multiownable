@@ -16,15 +16,16 @@ namespace TakeWing.Neo.Multiownable.Tests
         public static void AssemblyInit(TestContext context)
         {
             string path = Directory.GetCurrentDirectory();
-            var avmBytes = File.ReadAllBytes(string.Format(@"{0}\Contracts\PoCNeoContract.avm", path));
+            var avmBytes = File.ReadAllBytes(string.Format(@"{0}\Contracts\TakeWing.Neo.Multiownable.SmartContractsForTests.avm", path));
             var chain = new Blockchain();
             emulator = new Emulator(chain);
             var address = chain.DeployContract("test", avmBytes);
             emulator.SetExecutingAccount(address);
             emulator.checkWitnessMode = CheckWitnessMode.AlwaysTrue;
 
-            string pathToAbi = string.Format(@"{0}\Contracts\PoCNeoContract.abi.json", path);
+            string pathToAbi = string.Format(@"{0}\Contracts\TakeWing.Neo.Multiownable.SmartContractsForTests.abi", path);
             abiFile = new ABI(pathToAbi);
+            
 
         }
 
