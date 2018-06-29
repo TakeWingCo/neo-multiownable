@@ -8,10 +8,8 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TakeWing.Neo.Multiownable.SmartContractsForTests
+namespace TakeWing.Neo.Multiownable
 {
-    partial class Contract1 : SmartContract
-    {
         /// <summary>
         /// Library for easy multisig and consensus.
         /// </summary>
@@ -198,4 +196,3 @@ namespace TakeWing.Neo.Multiownable.SmartContractsForTests
             }
         }
     }
-}
