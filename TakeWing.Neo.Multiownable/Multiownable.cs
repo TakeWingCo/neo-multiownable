@@ -137,7 +137,6 @@ namespace TakeWing.Neo.Multiownable
 			return true;
 		}
 
-		// TODO : Check GenerationOfOwners.
 		/// <summary>
 		/// Check, that timeout doesn't expire and minimal required number of owners accepts call of function.
 		/// </summary>
@@ -157,6 +156,7 @@ namespace TakeWing.Neo.Multiownable
 			byte[] mainArray = functionSignature.AsByteArray();
 			mainArray.Append(ownersCount);
 			mainArray.Concat(((BigInteger)timeout).AsByteArray());
+			mainArray.Concat(((BigInteger)GetGenerationOfOwners()).AsByteArray());
 
 			for (int i = 0; i < args.Length; i++)
 				mainArray.Concat((byte[])args[0]);
@@ -164,8 +164,13 @@ namespace TakeWing.Neo.Multiownable
 			// Get Sha256.
 			byte[] shaMainArray = Sha256(mainArray);
 
+			var value = Storage.Get(Storage.CurrentContext, shaMainArray);
+			if (value.Length == 0)
+				return false;
+
 			// Check timeout.
 			UInt32 firstCallDate = (UInt32)Storage.Get(Storage.CurrentContext, shaMainArray.Concat("FirstCallDate".AsByteArray())).AsBigInteger();
+
 			UInt32 overdueDate = firstCallDate + timeout;
 
 			if (Runtime.Time > overdueDate)
@@ -174,7 +179,7 @@ namespace TakeWing.Neo.Multiownable
 			// Get voters count, check it and make a decision.
 			byte numberOwners = GetNumberOfOwners();
 
-			byte[] votersMask = Storage.Get(Storage.CurrentContext, shaMainArray);
+			byte[] votersMask = Storage.Get(Storage.CurrentContext, shaMainArray.Concat("VotersMask".AsByteArray()));
 			byte voted = 0;
 
 			for (byte i = 0; i < numberOwners; i++)
