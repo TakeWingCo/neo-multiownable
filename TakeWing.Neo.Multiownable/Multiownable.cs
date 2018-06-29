@@ -165,7 +165,7 @@ namespace TakeWing.Neo.Multiownable
 			byte[] shaMainArray = Sha256(mainArray);
 
 			// Check timeout.
-			UInt32 firstCallDate = (UInt32)Storage.Get(Storage.CurrentContext, mainArray.Concat("FirstCallDate".AsByteArray())).AsBigInteger();
+			UInt32 firstCallDate = (UInt32)Storage.Get(Storage.CurrentContext, shaMainArray.Concat("FirstCallDate".AsByteArray())).AsBigInteger();
 			UInt32 overdueDate = firstCallDate + timeout;
 
 			if (Runtime.Time > overdueDate)
@@ -174,7 +174,7 @@ namespace TakeWing.Neo.Multiownable
 			// Get voters count, check it and make a decision.
 			byte numberOwners = GetNumberOfOwners();
 
-			byte[] votersMask = Storage.Get(Storage.CurrentContext, mainArray);
+			byte[] votersMask = Storage.Get(Storage.CurrentContext, shaMainArray);
 			byte voted = 0;
 
 			for (byte i = 0; i < numberOwners; i++)
