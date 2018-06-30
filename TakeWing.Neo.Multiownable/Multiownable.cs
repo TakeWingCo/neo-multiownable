@@ -123,12 +123,16 @@ namespace TakeWing.Neo.Multiownable
 			}
 
 			// Set new list of owners.
-			for (byte i = 0; i < newOwners.Length; i++)
+			for (byte i = 1; i <= newOwners.Length; i++)
 			{
-				var key = "Owners".AsByteArray();
-				key.Concat(new byte[] { i });
+				var keyForOwners = "Owners".AsByteArray();
+				var keyForIndexes = "IndexesOfOwners".AsByteArray();
 
-				Storage.Put(Storage.CurrentContext, key, newOwners[i]);
+				keyForOwners.Concat(new byte[] { i });
+				keyForIndexes = keyForIndexes.Concat(newOwners[0]);
+
+				Storage.Put(Storage.CurrentContext, keyForOwners, newOwners[i]);
+				Storage.Put(Storage.CurrentContext, keyForIndexes, new byte[] { i });
 			}
 
 			// Change generation.
