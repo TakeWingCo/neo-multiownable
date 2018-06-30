@@ -14,8 +14,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TakeWing.Neo.Multiownable",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TakeWing.Neo.Multiownable.Tests", "TakeWing.Neo.Multiownable.Tests\TakeWing.Neo.Multiownable.Tests.csproj", "{BA334EF6-EDCA-4325-9666-310D4CCEAAFB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TakeWing.Neo.Multiownable.SmartContractsForTests", "TakeWing.Neo.Multiownable.SmartContractsForTests\TakeWing.Neo.Multiownable.SmartContractsForTests.csproj", "{289EAF11-423F-47AE-9894-86CC2340004F}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,10 +28,6 @@ Global
 		{BA334EF6-EDCA-4325-9666-310D4CCEAAFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BA334EF6-EDCA-4325-9666-310D4CCEAAFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BA334EF6-EDCA-4325-9666-310D4CCEAAFB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{289EAF11-423F-47AE-9894-86CC2340004F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{289EAF11-423F-47AE-9894-86CC2340004F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{289EAF11-423F-47AE-9894-86CC2340004F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{289EAF11-423F-47AE-9894-86CC2340004F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

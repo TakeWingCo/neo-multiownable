@@ -9,29 +9,17 @@ namespace TakeWing.Neo.Multiownable.Tests
     [TestClass]
     public class MultiownableTests
     {
-        private static Emulator emulator;
-        private static ABI abiFile;
-
         [AssemblyInitialize]
         public static void AssemblyInit(TestContext context)
         {
-            string path = Directory.GetCurrentDirectory();
-            var avmBytes = File.ReadAllBytes(string.Format(@"{0}\Contracts\TakeWing.Neo.Multiownable.SmartContractsForTests.avm", path));
-            var chain = new Blockchain();
-            emulator = new Emulator(chain);
-            var address = chain.DeployContract("test", avmBytes);
-            emulator.SetExecutingAccount(address);
-            emulator.checkWitnessMode = CheckWitnessMode.AlwaysTrue;
-
-            string pathToAbi = string.Format(@"{0}\Contracts\TakeWing.Neo.Multiownable.SmartContractsForTests.abi", path);
-            abiFile = new ABI(pathToAbi);
-            
-
+            Settings.Init();
         }
 
         [TestMethod]
-        public void TestMethod1()
+        public void Settings_init()
         {
+            Assert.AreNotEqual("0.0.0.0",Settings.data.IP_addres_node);
+            Assert.AreNotEqual("contract_name.avm",Settings.data.Path_to_contract_file);
         }
     }
 }
