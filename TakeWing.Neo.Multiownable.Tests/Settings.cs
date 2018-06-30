@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace TakeWing.Neo.Multiownable.Tests
 {
     public static class Settings
@@ -23,12 +24,12 @@ namespace TakeWing.Neo.Multiownable.Tests
             {
                 throw new Exception("Invalid config file, expected path: " + @"..\..\config.json");
             }
-            if (File.Exists(@"..\..\Contracts\" + data.Path_to_contract_file))
+            if (File.Exists(@"..\..\Contracts\" + data.PathToContractFile))
             {
             }
             else
             {
-                throw new Exception("Invalid config file, expected path: " + @"..\..\Contracts\" + data.Path_to_contract_file);
+                throw new Exception("Invalid config file, expected path: " + @"..\..\Contracts\" + data.PathToContractFile);
             }
 
         }

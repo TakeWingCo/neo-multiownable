@@ -4,7 +4,6 @@ using Neo.SmartContract.Framework;
 using Neo.SmartContract.Framework.Services.Neo;
 
 
-
 namespace TakeWing.Neo.Multiownable.SmartContractsForTests
 {
 	public class Contract1 : SmartContract

@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Neo.Emulation;
 using Neo.Emulation.API;
 
+
 namespace TakeWing.Neo.Multiownable.Tests
 {
     [TestClass]
@@ -18,8 +19,8 @@ namespace TakeWing.Neo.Multiownable.Tests
         [TestMethod]
         public void Settings_init()
         {
-            Assert.AreNotEqual("0.0.0.0",Settings.data.IP_addres_node);
-            Assert.AreNotEqual("contract_name.avm",Settings.data.Path_to_contract_file);
+            Assert.AreNotEqual("0.0.0.0", Settings.data.IPAddresNode);
+            Assert.AreNotEqual("contract_name.avm", Settings.data.PathToContractFile);
         }
     }
 }
