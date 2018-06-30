@@ -87,14 +87,11 @@ namespace TakeWing.Neo.Multiownable
 		/// <returns>True if public key in owners list, false else</returns>
 		public static Boolean IsOwner(Byte[] publicKey)
 		{
-			byte ownersCount = GetNumberOfOwners();
-			Byte[][] ownersList = GetAllOwners();
-			
-			for (byte i = 0; i < ownersCount; i++)
-				if (ownersList[i] == publicKey)
-					return true;
+			byte ownerIndex = GetIndexByOwner(publicKey);
+			if (ownerIndex == 0)
+				return false;
 
-			return false;
+			return true;
 		}
 
 		/// <summary>
@@ -105,12 +102,16 @@ namespace TakeWing.Neo.Multiownable
 		/// <returns>Return true after successful transfer, else false</returns>
 		public static Boolean TransferOwnership(Byte[] initiator, Byte[][] newOwners)
 		{
-			if (!IsOwner(initiator))
-				return false;
-
-			byte ownersCount = GetNumberOfOwners();
-			if (ownersCount > 0)
+			UInt64 generationOfOwners = GetGenerationOfOwners();
+			if (generationOfOwners > 0)
 			{
+				if (!IsOwner(initiator))
+					return false;
+
+				byte ownersCount = GetNumberOfOwners();
+				if (!IsAcceptedBySomeOwners(initiator, "TransferOwnership", (byte)((ownersCount / 2) + 1), 1200, newOwners))
+					return false;
+
 				// Clear current list of owners.
 				for (byte i = 0; i < ownersCount; i++)
 				{
@@ -131,12 +132,13 @@ namespace TakeWing.Neo.Multiownable
 			}
 
 			// Change generation.
-			UInt64 newGeneration = GetGenerationOfOwners() + 1;
-			Storage.Put(Storage.CurrentContext, "GenerationOfOwners", newGeneration);
+			generationOfOwners++;
+			Storage.Put(Storage.CurrentContext, "GenerationOfOwners", generationOfOwners);
 
 			return true;
 		}
 
+		// TODO : Make a vote.
 		/// <summary>
 		/// Check, that timeout doesn't expire and minimal required number of owners accepts call of function.
 		/// </summary>
