@@ -9,7 +9,7 @@ namespace TakeWing.Neo.Multiownable.Tests
 {
     public class Data
     {
-        public string IPAddresNode { get; set; }
+        public string IpAddresNode { get; set; }
         public string PathToContractFile { get; set; }
     }
 }

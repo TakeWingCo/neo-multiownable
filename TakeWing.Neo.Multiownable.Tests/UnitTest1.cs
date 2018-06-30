@@ -19,8 +19,8 @@ namespace TakeWing.Neo.Multiownable.Tests
         [TestMethod]
         public void Settings_init()
         {
-            Assert.AreNotEqual("0.0.0.0", Settings.data.IPAddresNode);
-            Assert.AreNotEqual("contract_name.avm", Settings.data.PathToContractFile);
+            Assert.AreNotEqual("0.0.0.0", Settings.Data.IpAddresNode);
+            Assert.AreNotEqual("contract_name.avm", Settings.Data.PathToContractFile);
         }
     }
 }
