@@ -1,11 +1,13 @@
 ﻿using Neo;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using Neo.Lux.Core;
-using Neo;
+using System.Net;
+using System.Text;
 using NeoOriginal = Neo;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 
 namespace TakeWing.Neo.Multiownable.Tests
@@ -34,25 +36,51 @@ namespace TakeWing.Neo.Multiownable.Tests
             }
         }
 
-        public static string LoadContract()
+        public static string LoadContractScript(String CallMethod = null, Object[] ParmsArray = null)
         {
-            var noparamAVM = System.IO.File.ReadAllBytes(Settings.Data.PathToContractFile);
-            var str = Helper.ToHexString(noparamAVM);
-
-            
+            var NoparamAvm = File.ReadAllBytes(@"..\..\Contracts\" + Data.PathToContractFile);
+            var AvmString = Helper.ToHexString(NoparamAvm);
+            if (CallMethod == null && ParmsArray == null)
+                return AvmString;
             NeoOriginal.VM.ScriptBuilder sb = new NeoOriginal.VM.ScriptBuilder();
-            sb.EmitPush(12);
-            sb.EmitPush(14);
-            sb.EmitPush(2);
+            sb.EmitPush(CallMethod);
+            foreach (var param in ParmsArray)
+            {
+                sb.EmitPush(Encoding.UTF8.GetBytes(param.ToString()));
+            }
             sb.Emit(NeoOriginal.VM.OpCode.PACK);
-            sb.EmitPush("param1");
             var _params = sb.ToArray();
-            var str2 = NeoOriginal.Helper.ToHexString(_params);
+            var ParamsString = NeoOriginal.Helper.ToHexString(_params);
+            return ParamsString + AvmString;
+        }
 
-            Console.WriteLine("AVM=" + str2 + str);
-            Console.ReadLine();
-            
-            return "";
+        public static async Task<string> ConnectToTheRemoteNodeByRpcAsync()
+        {
+            try
+            {
+                var  client = new HttpClient();
+                Dictionary<String, String> RpcRequestDictionary = new Dictionary<string, String>
+                {
+                    {"jsonrpc", "2.0"},
+                    {"method", "invokescript"},
+                    {"params", "["+LoadContractScript()+"]"}
+                };
+
+                //string RpcJson = JsonConvert.SerializeObject(RpcRequestDictionary, Formatting.Indented);
+                
+                
+                var body = new FormUrlEncodedContent(RpcRequestDictionary);
+
+                var response = await client.PostAsync("http://" + Data.IpAddresNode + "/", body);
+
+                var responseString = await response.Content.ReadAsStringAsync();
+
+                return responseString;
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }
