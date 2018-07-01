@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Numerics;
 using Neo.VM;
 using Neo.SmartContract.Framework;
@@ -107,11 +106,11 @@ namespace TakeWing.Neo.Multiownable
 			{
 				if (!IsOwner(initiator))
 					return false;
-
+				
 				byte ownersCount = GetNumberOfOwners();
 				if (!IsAcceptedBySomeOwners(initiator, "TransferOwnership", (byte)((ownersCount / 2) + 1), 1200, newOwners))
 					return false;
-
+				
 				// Clear current list of owners.
 				for (byte i = 0; i < ownersCount; i++)
 				{
@@ -138,11 +137,10 @@ namespace TakeWing.Neo.Multiownable
 			// Change generation.
 			generationOfOwners++;
 			Storage.Put(Storage.CurrentContext, "GenerationOfOwners", generationOfOwners);
-
+			
 			return true;
 		}
 
-		// TODO : Make a vote.
 		/// <summary>
 		/// Check, that timeout doesn't expire and minimal required number of owners accepts call of function.
 		/// </summary>
@@ -182,6 +180,8 @@ namespace TakeWing.Neo.Multiownable
 			if (Runtime.Time > overdueDate)
 				return false;
 
+			#region  Need to fix it.
+
 			// Get voters mask, check voters and make a decision.
 			byte numberOwners = GetNumberOfOwners();
 
@@ -194,9 +194,14 @@ namespace TakeWing.Neo.Multiownable
 					voted++;
 
 			if (voted < ownersCount)
+			{
+				// TODO : Make a vote.
 				return false;
+			}
 
 			return true;
+
+			#endregion
 		}
 	}
 }
