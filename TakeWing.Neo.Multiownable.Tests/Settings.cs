@@ -17,6 +17,7 @@ namespace TakeWing.Neo.Multiownable.Tests
     {
         public static Data Data;
         public static int RequestId = 1;
+        public static string responseContent;
         public static void Init()
         {
             if (File.Exists(@"..\..\config.json"))
@@ -58,9 +59,6 @@ namespace TakeWing.Neo.Multiownable.Tests
 
         public static async Task<string> ConnectToTheRemoteNodeByRpcAsync()
         {
-            try
-            {
-                
                 Logger.InitLogger();
                 var  client = new HttpClient();
                 Request RpcRequest = new Request()
@@ -82,20 +80,21 @@ namespace TakeWing.Neo.Multiownable.Tests
                     if (httpResponse.Content != null)
                     {
                         // Error Here
-                        var responseContent = await httpResponse.Content.ReadAsStringAsync();
+                        responseContent = await httpResponse.Content.ReadAsStringAsync();
                         Logger.Log.Info(responseContent);
-                        var ResponseJson = await Task.Run(() => JsonConvert.DeserializeObject<Response>(responseContent));
-                        Logger.Log.Info(ResponseJson.Result);
-                        return responseContent;
+                        var response = JsonResponseToStringConverter(responseContent);  
                     }
+                    return responseContent;
                 }
+        }
 
-                return null;
-            }
-            catch
-            {
-                return null;
-            }
+        public static Response JsonResponseToStringConverter(string ResponseJson)
+        {
+            Response response = new Response();
+            response = JsonConvert.DeserializeObject<Response>(ResponseJson);
+            Logger.Log.Info(response.Result.State);
+            return response;
         }
     }
+
 }

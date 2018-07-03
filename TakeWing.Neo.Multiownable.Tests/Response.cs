@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace TakeWing.Neo.Multiownable.Tests
 {
-    class Response
+    public class Response
     {
         [JsonProperty("jsonrpc")]
         public string JsonRpc { get; set; }
@@ -16,15 +16,12 @@ namespace TakeWing.Neo.Multiownable.Tests
         public string Id { get; set; }
 
         [JsonProperty("result")]
-        public string Result { get; set; }
+        public Result Result { get; set; }
 
-        [JsonProperty("params")]
-        public string[] Params { get; set; }
-
-        
+           
     }
 
-    class Result
+    public class Result
     {
         [JsonProperty("script")]
         public string Script { get; set; }
@@ -42,7 +39,7 @@ namespace TakeWing.Neo.Multiownable.Tests
         public string Tx { get; set; }
     }
 
-    class Stack
+    public class Stack
     {
         [JsonProperty("type")]
         public string Type { get; set; }
