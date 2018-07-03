@@ -28,6 +28,8 @@ namespace TakeWing.Neo.Multiownable.Tests
         [AssemblyInitialize]
         public static void AssemblyInit(TestContext context)
         {
+            Logger.InitLogger();
+            Logger.Log.Info("Initialize Unit Tests");
             Settings.Init();
         }
 

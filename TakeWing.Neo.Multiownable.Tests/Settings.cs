@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using NeoOriginal = Neo;
@@ -15,6 +16,7 @@ namespace TakeWing.Neo.Multiownable.Tests
     public static class Settings
     {
         public static Data Data;
+        public static int RequestId = 1;
         public static void Init()
         {
             if (File.Exists(@"..\..\config.json"))
@@ -58,24 +60,37 @@ namespace TakeWing.Neo.Multiownable.Tests
         {
             try
             {
+                
+                Logger.InitLogger();
                 var  client = new HttpClient();
-                Dictionary<String, String> RpcRequestDictionary = new Dictionary<string, String>
+                Request RpcRequest = new Request()
                 {
-                    {"jsonrpc", "2.0"},
-                    {"method", "invokescript"},
-                    {"params", "["+LoadContractScript()+"]"}
+                    JsonRpc = "2.0",
+                    Id = RequestId.ToString(),
+                    Method = "invokescript",
+                    Params = new []{LoadContractScript(),""}
                 };
-
+                
                 //string RpcJson = JsonConvert.SerializeObject(RpcRequestDictionary, Formatting.Indented);
-                
-                
-                var body = new FormUrlEncodedContent(RpcRequestDictionary);
+                string json = await Task.Run(() => JsonConvert.SerializeObject(RpcRequest));
+                Logger.Log.Info(json);
+                var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+                using (var httpClient = new HttpClient())
+                {
+                    // Error here
+                    var httpResponse = await httpClient.PostAsync("http://" + Data.IpAddresNode + "/", httpContent);
+                    if (httpResponse.Content != null)
+                    {
+                        // Error Here
+                        var responseContent = await httpResponse.Content.ReadAsStringAsync();
+                        Logger.Log.Info(responseContent);
+                        var ResponseJson = await Task.Run(() => JsonConvert.DeserializeObject<Response>(responseContent));
+                        Logger.Log.Info(ResponseJson.Result);
+                        return responseContent;
+                    }
+                }
 
-                var response = await client.PostAsync("http://" + Data.IpAddresNode + "/", body);
-
-                var responseString = await response.Content.ReadAsStringAsync();
-
-                return responseString;
+                return null;
             }
             catch
             {
