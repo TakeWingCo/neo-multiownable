@@ -156,6 +156,8 @@ namespace TakeWing.Neo.Multiownable
 			if (!IsOwner(initiator))
 				return false;
 
+			return true;
+
 			// Convert and concat to one array.
 			byte[] mainArray = functionSignature.AsByteArray();
 			mainArray.Concat(new byte[] { ownersCount });
