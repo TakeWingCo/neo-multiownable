@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Numerics;
 using Neo.VM;
 using Neo.SmartContract.Framework;
@@ -87,14 +86,11 @@ namespace TakeWing.Neo.Multiownable
 		/// <returns>True if public key in owners list, false else</returns>
 		public static Boolean IsOwner(Byte[] publicKey)
 		{
-			byte ownersCount = GetNumberOfOwners();
-			Byte[][] ownersList = GetAllOwners();
-			
-			for (byte i = 0; i < ownersCount; i++)
-				if (ownersList[i] == publicKey)
-					return true;
+			byte ownerIndex = GetIndexByOwner(publicKey);
+			if (ownerIndex == 0)
+				return false;
 
-			return false;
+			return true;
 		}
 
 		/// <summary>
@@ -105,12 +101,16 @@ namespace TakeWing.Neo.Multiownable
 		/// <returns>Return true after successful transfer, else false</returns>
 		public static Boolean TransferOwnership(Byte[] initiator, Byte[][] newOwners)
 		{
-			if (!IsOwner(initiator))
-				return false;
-
-			byte ownersCount = GetNumberOfOwners();
-			if (ownersCount > 0)
+			UInt64 generationOfOwners = GetGenerationOfOwners();
+			if (generationOfOwners > 0)
 			{
+				if (!IsOwner(initiator))
+					return false;
+				
+				byte ownersCount = GetNumberOfOwners();
+				if (!IsAcceptedBySomeOwners(initiator, "TransferOwnership", (byte)((ownersCount / 2) + 1), 1200, newOwners))
+					return false;
+				
 				// Clear current list of owners.
 				for (byte i = 0; i < ownersCount; i++)
 				{
@@ -122,18 +122,22 @@ namespace TakeWing.Neo.Multiownable
 			}
 
 			// Set new list of owners.
-			for (byte i = 0; i < newOwners.Length; i++)
+			for (byte i = 1; i <= newOwners.Length; i++)
 			{
-				var key = "Owners".AsByteArray();
-				key.Concat(new byte[] { i });
+				var keyForOwners = "Owners".AsByteArray();
+				var keyForIndexes = "IndexesOfOwners".AsByteArray();
 
-				Storage.Put(Storage.CurrentContext, key, newOwners[i]);
+				keyForOwners.Concat(new byte[] { i });
+				keyForIndexes = keyForIndexes.Concat(newOwners[0]);
+
+				Storage.Put(Storage.CurrentContext, keyForOwners, newOwners[i]);
+				Storage.Put(Storage.CurrentContext, keyForIndexes, new byte[] { i });
 			}
 
 			// Change generation.
-			UInt64 newGeneration = GetGenerationOfOwners() + 1;
-			Storage.Put(Storage.CurrentContext, "GenerationOfOwners", newGeneration);
-
+			generationOfOwners++;
+			Storage.Put(Storage.CurrentContext, "GenerationOfOwners", generationOfOwners);
+			
 			return true;
 		}
 
@@ -151,6 +155,8 @@ namespace TakeWing.Neo.Multiownable
 		{
 			if (!IsOwner(initiator))
 				return false;
+
+			return true;
 
 			// Convert and concat to one array.
 			byte[] mainArray = functionSignature.AsByteArray();
@@ -176,6 +182,8 @@ namespace TakeWing.Neo.Multiownable
 			if (Runtime.Time > overdueDate)
 				return false;
 
+			#region  Need to fix it.
+
 			// Get voters mask, check voters and make a decision.
 			byte numberOwners = GetNumberOfOwners();
 
@@ -188,9 +196,14 @@ namespace TakeWing.Neo.Multiownable
 					voted++;
 
 			if (voted < ownersCount)
+			{
+				// TODO : Make a vote.
 				return false;
+			}
 
 			return true;
+
+			#endregion
 		}
 	}
 }
