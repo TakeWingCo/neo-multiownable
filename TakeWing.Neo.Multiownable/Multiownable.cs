@@ -37,7 +37,7 @@ namespace TakeWing.Neo.Multiownable
 		public static Byte[] GetOwnerByIndex(Byte index)
 		{
 			var key = "Owners".AsByteArray();
-			key.Concat(new byte[] { index });
+			key.Concat(new Byte[] { index });
 
 			return Storage.Get(Storage.CurrentContext, key);
 		}
@@ -70,11 +70,13 @@ namespace TakeWing.Neo.Multiownable
 		/// <returns>Array of owners</returns>
 		public static Byte[][] GetAllOwners()
 		{
-			byte ownersCount = GetNumberOfOwners();
+			Byte ownersCount = GetNumberOfOwners();
 
-			byte[][] result = new byte[][] { };
+			Byte[][] result = new byte[][] { };
 			for (byte i = 0; i < ownersCount; i++)
+			{
 				result[i] = GetOwnerByIndex(i);
+			}
 
 			return result;
 		}
@@ -104,11 +106,8 @@ namespace TakeWing.Neo.Multiownable
 			UInt64 generationOfOwners = GetGenerationOfOwners();
 			if (generationOfOwners > 0)
 			{
-				if (!IsOwner(initiator))
-					return false;
-				
 				byte ownersCount = GetNumberOfOwners();
-				if (!IsAcceptedBySomeOwners(initiator, "TransferOwnership", (byte)((ownersCount / 2) + 1), 1200, newOwners))
+				if (!IsAcceptedBySomeOwners(initiator, "Boolean TransferOwnership(Byte[], Byte[][])", (byte)((ownersCount / 2) + 1), 1200, newOwners))
 					return false;
 				
 				// Clear current list of owners.
@@ -136,7 +135,7 @@ namespace TakeWing.Neo.Multiownable
 
 			// Change generation.
 			generationOfOwners++;
-			Storage.Put(Storage.CurrentContext, "GenerationOfOwners", generationOfOwners);
+			Storage.Put(Storage.CurrentContext, "GenerationOfOwners", (BigInteger)generationOfOwners);
 			
 			return true;
 		}
@@ -155,8 +154,6 @@ namespace TakeWing.Neo.Multiownable
 		{
 			if (!IsOwner(initiator))
 				return false;
-
-			return true;
 
 			// Convert and concat to one array.
 			byte[] mainArray = functionSignature.AsByteArray();
@@ -182,28 +179,24 @@ namespace TakeWing.Neo.Multiownable
 			if (Runtime.Time > overdueDate)
 				return false;
 
-			#region  Need to fix it.
 
 			// Get voters mask, check voters and make a decision.
 			byte numberOwners = GetNumberOfOwners();
 
 			byte[] votersMask = Storage.Get(Storage.CurrentContext, shaMainArray.Concat("VotersMask".AsByteArray()));
+			Byte totalVoted = Storage.Get(Storage.CurrentContext, shaMainArray.Concat("TotalVoted".AsByteArray()))[0];
+			Byte ownerIndex = GetIndexByOwner(initiator);
 
-			// Counting owners who already voted and check it.
-			byte voted = 0;
-			for (byte i = 0; i < numberOwners; i++)
-				if (votersMask[i] == 1)
-					voted++;
-
-			if (voted < ownersCount)
+			if (votersMask[ownerIndex] != 1)
 			{
-				// TODO : Make a vote.
-				return false;
+				votersMask[ownerIndex] = 1;
+				totalVoted++;
+
+				Storage.Put(Storage.CurrentContext, shaMainArray.Concat("VotersMask".AsByteArray()), votersMask);
+				Storage.Put(Storage.CurrentContext, shaMainArray.Concat("TotalVoted".AsByteArray()), new Byte[] {totalVoted});
 			}
 
-			return true;
-
-			#endregion
+			return totalVoted == ownersCount;
 		}
 	}
 }
