@@ -172,20 +172,25 @@ namespace TakeWing.Neo.Multiownable
 			if (value.Length == 0)
 				return false;
 
-			// Check timeout and return false if time overdue.
-			UInt32 firstCallDate = (UInt32)Storage.Get(Storage.CurrentContext, shaMainArray.Concat("FirstCallDate".AsByteArray())).AsBigInteger();
-			UInt32 overdueDate = firstCallDate + timeout;
-
-			if (Runtime.Time > overdueDate)
-				return false;
-
-
+			
 			// Get voters mask, check voters and make a decision.
 			byte numberOwners = GetNumberOfOwners();
 
 			byte[] votersMask = Storage.Get(Storage.CurrentContext, shaMainArray.Concat("VotersMask".AsByteArray()));
 			Byte totalVoted = Storage.Get(Storage.CurrentContext, shaMainArray.Concat("TotalVoted".AsByteArray()))[0];
 			Byte ownerIndex = GetIndexByOwner(initiator);
+
+			if (totalVoted == 0)
+			{
+				Storage.Put(Storage.CurrentContext, shaMainArray.Concat("FirstCallDate".AsByteArray()), Runtime.Time);
+			}
+
+			// Check timeout and return false if time overdue.
+			UInt32 firstCallDate = (UInt32)Storage.Get(Storage.CurrentContext, shaMainArray.Concat("FirstCallDate".AsByteArray())).AsBigInteger();
+			UInt32 overdueDate = firstCallDate + timeout;
+
+			if (Runtime.Time > overdueDate)
+				return false;
 
 			if (votersMask[ownerIndex] != 1)
 			{
