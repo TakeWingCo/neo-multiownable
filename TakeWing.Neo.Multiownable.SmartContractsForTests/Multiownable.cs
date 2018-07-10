@@ -72,11 +72,9 @@ namespace TakeWing.Neo.Multiownable
 		{
 			Byte ownersCount = GetNumberOfOwners();
 
-			Byte[][] result = new byte[][] { };
+			Byte[][] result = new byte[ownersCount][];
 			for (byte i = 0; i < ownersCount; i++)
-			{
-				result[i] = GetOwnerByIndex(i);
-			}
+				result[i] = GetOwnerByIndex((byte)(i + 1));
 
 			return result;
 		}
@@ -182,9 +180,7 @@ namespace TakeWing.Neo.Multiownable
 				return false;
 
 			
-			// Get voters mask, check voters and make a decision.
-			byte numberOwners = GetNumberOfOwners();
-
+			// Get voters mask, check voters and make a decision
 			byte[] votersMask = Storage.Get(Storage.CurrentContext, shaMainArray.Concat("VotersMask".AsByteArray()));
 			Byte totalVoted = Storage.Get(Storage.CurrentContext, shaMainArray.Concat("TotalVoted".AsByteArray()))[0];
 			Byte ownerIndex = GetIndexByOwner(initiator);
