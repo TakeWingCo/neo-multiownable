@@ -164,7 +164,7 @@ namespace TakeWing.Neo.Multiownable
 
 			// Convert and concat to one array.
 			byte[] mainArray = functionSignature.AsByteArray();
-			mainArray.Concat(new byte[] { ownersCount });
+			mainArray.Concat(((BigInteger)ownersCount).AsByteArray());
 			mainArray.Concat(((BigInteger)timeout).AsByteArray());
 			mainArray.Concat(((BigInteger)GetGenerationOfOwners()).AsByteArray());
 
@@ -203,7 +203,7 @@ namespace TakeWing.Neo.Multiownable
 				totalVoted++;
 
 				Storage.Put(Storage.CurrentContext, shaMainArray.Concat("VotersMask".AsByteArray()), votersMask);
-				Storage.Put(Storage.CurrentContext, shaMainArray.Concat("TotalVoted".AsByteArray()), new Byte[] {totalVoted});
+				Storage.Put(Storage.CurrentContext, shaMainArray.Concat("TotalVoted".AsByteArray()), ((BigInteger)totalVoted).AsByteArray());
 			}
 
 			return totalVoted == ownersCount;
