@@ -37,8 +37,8 @@ namespace TakeWing.Neo.Multiownable
 		public static Byte[] GetOwnerByIndex(Byte index)
 		{
 			var key = "Owners".AsByteArray();
-			key.Concat(new Byte[] { index });
-
+			key = key.Concat(((BigInteger) index).AsByteArray());
+			
 			return Storage.Get(Storage.CurrentContext, key);
 		}
 
@@ -111,31 +111,40 @@ namespace TakeWing.Neo.Multiownable
 					return false;
 				
 				// Clear current list of owners.
-				for (byte i = 0; i < ownersCount; i++)
+				for (byte i = 1; i <= ownersCount; i++)
 				{
-					var key = "Owners".AsByteArray();
-					key.Concat(new byte[] { i });
+					var keyForOwners = "Owners".AsByteArray();
+					var keyForIndexes = "IndexesOfOwners".AsByteArray();
 
-					Storage.Delete(Storage.CurrentContext, key);
+					keyForOwners = keyForOwners.Concat(((BigInteger)i).AsByteArray());
+					keyForIndexes = keyForIndexes.Concat(Storage.Get(Storage.CurrentContext, keyForOwners));
+
+					Storage.Delete(Storage.CurrentContext, keyForOwners);
+					Storage.Delete(Storage.CurrentContext, keyForIndexes);
 				}
+
+				return true;
 			}
 
 			// Set new list of owners.
-			for (byte i = 1; i < newOwners.Length; i++)
+			for (byte i = 1; i <= newOwners.Length; i++)
 			{
 				var keyForOwners = "Owners".AsByteArray();
 				var keyForIndexes = "IndexesOfOwners".AsByteArray();
 
-				keyForOwners.Concat(new byte[] { i });
-				keyForIndexes = keyForIndexes.Concat(newOwners[0]);
+				keyForOwners = keyForOwners.Concat(((BigInteger)i).AsByteArray());
+				keyForIndexes = keyForIndexes.Concat(newOwners[i - 1]);
 
-				Storage.Put(Storage.CurrentContext, keyForOwners, newOwners[i]);
-				Storage.Put(Storage.CurrentContext, keyForIndexes, new byte[] { i });
+				Storage.Put(Storage.CurrentContext, keyForOwners, newOwners[i - 1]);
+				Storage.Put(Storage.CurrentContext, keyForIndexes, i);
 			}
 
 			// Change generation.
 			generationOfOwners++;
-			Storage.Put(Storage.CurrentContext, "GenerationOfOwners", (BigInteger)generationOfOwners);
+			Storage.Put(Storage.CurrentContext, "GenerationOfOwners", generationOfOwners);
+
+			// Change NumberOfOwners
+			Storage.Put(Storage.CurrentContext, "NumberOfOwners", newOwners.Length);
 			
 			return true;
 		}
