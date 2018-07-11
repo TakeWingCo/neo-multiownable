@@ -59,12 +59,6 @@
   <ItemGroup>
     <Content Include="Neo.ConvertTask.dll" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\TakeWing.Neo.Multiownable\TakeWing.Neo.Multiownable.csproj">
-      <Project>{d7b0ff71-4ac0-4403-84e7-8ee439d5a4f9}</Project>
-      <Name>TakeWing.Neo.Multiownable</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="Build.tasks" />
   <Target Name="AfterBuild">
