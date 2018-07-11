@@ -159,10 +159,11 @@ namespace TakeWing.Neo.Multiownable
 		public static Boolean IsAcceptedBySomeOwners(Byte[] initiator, String functionSignature, Byte ownersCount, UInt32 timeout,
 			params Object[] args)
 		{
-			if (!IsOwner(initiator))
+			// If initiator not Invoker or owner, return false.
+			if (!Runtime.CheckWitness(initiator) || !IsOwner(initiator))
 				return false;
 
-			// Convert and concat to one array.
+			// Convert and concat to one array all args.
 			byte[] mainArray = functionSignature.AsByteArray();
 			mainArray.Concat(((BigInteger)ownersCount).AsByteArray());
 			mainArray.Concat(((BigInteger)timeout).AsByteArray());
@@ -173,30 +174,26 @@ namespace TakeWing.Neo.Multiownable
 
 			// Get Sha256 hash from array.
 			byte[] shaMainArray = Sha256(mainArray);
-
-			// Check value by key, return false if value is empty.
-			var value = Storage.Get(Storage.CurrentContext, shaMainArray);
-			if (value.Length == 0)
-				return false;
-
 			
-			// Get voters mask, check voters and make a decision
+			// Get voters mask.
 			byte[] votersMask = Storage.Get(Storage.CurrentContext, shaMainArray.Concat("VotersMask".AsByteArray()));
 			Byte totalVoted = Storage.Get(Storage.CurrentContext, shaMainArray.Concat("TotalVoted".AsByteArray()))[0];
 			Byte ownerIndex = GetIndexByOwner(initiator);
 
+			// If that function is called first time, set timeout.
 			if (totalVoted == 0)
 			{
 				Storage.Put(Storage.CurrentContext, shaMainArray.Concat("FirstCallDate".AsByteArray()), Runtime.Time);
 			}
 
-			// Check timeout and return false if time overdue.
+			// Check timeout and return false, if time overdue.
 			UInt32 firstCallDate = (UInt32)Storage.Get(Storage.CurrentContext, shaMainArray.Concat("FirstCallDate".AsByteArray())).AsBigInteger();
 			UInt32 overdueDate = firstCallDate + timeout;
 
 			if (Runtime.Time > overdueDate)
 				return false;
 
+			// Check voters and return true or do vote.
 			if (votersMask[ownerIndex] != 1)
 			{
 				votersMask[ownerIndex] = 1;
