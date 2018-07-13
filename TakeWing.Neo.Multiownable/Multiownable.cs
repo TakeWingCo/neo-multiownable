@@ -120,8 +120,6 @@ namespace TakeWing.Neo.Multiownable
 					Storage.Delete(Storage.CurrentContext, keyForOwners);
 					Storage.Delete(Storage.CurrentContext, keyForIndexes);
 				}
-
-				return true;
 			}
 
 			// Set new list of owners.
@@ -183,6 +181,17 @@ namespace TakeWing.Neo.Multiownable
 			// If that function is called first time, set timeout.
 			if (totalVoted == 0)
 			{
+				Runtime.Notify(votersMask.Length);
+
+				int numberOfOwners = GetNumberOfOwners();
+				for (int i = 0; i < numberOfOwners; i++)
+				{
+					votersMask = votersMask.Concat(new byte[1] { 0 });
+					Runtime.Notify(votersMask[0]);
+				}
+
+				Runtime.Notify(votersMask.Length);
+
 				Storage.Put(Storage.CurrentContext, shaMainArray.Concat("FirstCallDate".AsByteArray()), Runtime.Time);
 			}
 
@@ -197,8 +206,7 @@ namespace TakeWing.Neo.Multiownable
 			if (votersMask[ownerIndex] != 1)
 			{
 				totalVoted = (byte)(totalVoted + 1);
-				Runtime.Notify(totalVoted);
-				votersMask[ownerIndex] = 1;
+				votersMask[ownerIndex]++;
 
 				Storage.Put(Storage.CurrentContext, shaMainArray.Concat("TotalVoted".AsByteArray()), totalVoted);
 				Storage.Put(Storage.CurrentContext, shaMainArray.Concat("VotersMask".AsByteArray()), votersMask);
