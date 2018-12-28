@@ -11,4 +11,8 @@ jobs:
 
   - script: |
       dotnet build TakeWing.Neo.Multiownable\TakeWing.Neo.Multiownable.csproj
-    displayName: 'Build Multiownable'
+    displayName: 'Build multiownable'
+
+  - script: |
+      dotnet build TakeWing.Neo.Multiownable.SmartContractsForTests\TakeWing.Neo.Multiownable.SmartContractsForTests.csproj
+    displayName: 'Build smart conract'
