@@ -5,6 +5,9 @@ jobs:
     vmImage: 'vs2017-win2016'
 
   steps:
+  - task: NuGetCommand@2
+    inputs:
+      command: 'restore'
 
   - script: |
       dotnet build TakeWing.Neo.Multiownable\TakeWing.Neo.Multiownable.csproj
