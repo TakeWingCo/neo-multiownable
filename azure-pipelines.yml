@@ -8,12 +8,12 @@ jobs:
   - task: DotNetCoreCLI@2
     inputs:
       command: 'restore'
-      projects: 'TakeWing.Neo.Multiownable\TakeWing.Neo.Multiownable.csproj'
+      projects: 'TakeWing.Neo.Multiownable\\TakeWing.Neo.Multiownable.csproj'
 
   - task: DotNetCoreCLI@2
     inputs:
       command: 'build'
-      projects: TakeWing.Neo.Multiownable\TakeWing.Neo.Multiownable.csproj'    
+      projects: 'TakeWing.Neo.Multiownable\\TakeWing.Neo.Multiownable.csproj'    
 
   - script: |
       dotnet build TakeWing.Neo.Multiownable\TakeWing.Neo.Multiownable.csproj
