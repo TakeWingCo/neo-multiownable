@@ -9,6 +9,6 @@ jobs:
     inputs:
       command: 'restore'
 
-  - task: VSBuild@1
-    inputs:
-      solution: '**\*.sln'
+  - script: |
+      dotnet build TakeWing.Neo.Multiownable\TakeWing.Neo.Multiownable.csproj
+    displayName: 'Build multiownable'
