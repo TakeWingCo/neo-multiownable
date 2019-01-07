@@ -7,12 +7,7 @@ jobs:
   steps:
   - task: NuGetCommand@2
     inputs:
-      command: custom
-      arguments: source Add -Name CustomPackages -Source ./TakeWing.Neo.Multiownable.Tests
-  
-  - task: NuGetCommand@2
-    inputs:
-      command: 'restore'
+      command: restore
 
   - script: |
       dotnet build TakeWing.Neo.Multiownable\TakeWing.Neo.Multiownable.csproj
