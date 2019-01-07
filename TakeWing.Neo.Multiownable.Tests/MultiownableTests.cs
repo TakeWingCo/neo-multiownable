@@ -239,6 +239,61 @@ namespace TakeWing.Neo.Multiownable.Tests
         }
 
         [TestMethod]
+        public void NewVotingCallTest()
+        {
+            SetOwnershipTest();
+
+            var operation = "Call";
+
+            // First vote
+            var args = $"\"{operation}\",[\"0x{PublicKeys[0]}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
+            var inputs = DebuggerUtils.GetArgsListAsNode(args);
+
+            var script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
+            Debugger.Emulator.Reset(script, Debugger.ABI, "Main");
+            Debugger.Emulator.Run();
+
+            // Second vote
+            args = $"\"{operation}\",[\"0x{PublicKeys[1]}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
+            inputs = DebuggerUtils.GetArgsListAsNode(args);
+
+            script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
+            Debugger.Emulator.Reset(script, Debugger.ABI, "Main");
+            Debugger.Emulator.Run();
+
+            // Increase time
+            Debugger.Emulator.timestamp += 2000;
+
+            // First vote
+            args = $"\"{operation}\",[\"0x{PublicKeys[0]}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
+            inputs = DebuggerUtils.GetArgsListAsNode(args);
+
+            script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
+            Debugger.Emulator.Reset(script, Debugger.ABI, "Main");
+            Debugger.Emulator.Run();
+
+            // Second vote
+            args = $"\"{operation}\",[\"0x{PublicKeys[0]}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
+            inputs = DebuggerUtils.GetArgsListAsNode(args);
+
+            script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
+            Debugger.Emulator.Reset(script, Debugger.ABI, "Main");
+            Debugger.Emulator.Run();
+
+            // Third vote
+            args = $"\"{operation}\",[\"0x{PublicKeys[0]}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
+            inputs = DebuggerUtils.GetArgsListAsNode(args);
+
+            script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
+            Debugger.Emulator.Reset(script, Debugger.ABI, "Main");
+            Debugger.Emulator.Run();
+
+            var result = Debugger.Emulator.GetOutput();
+
+            Assert.IsTrue(result.GetBoolean());
+        }
+
+        [TestMethod]
         public void DifferentVotingsTest()
         {
             SetOwnershipTest();
