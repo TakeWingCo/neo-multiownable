@@ -5,10 +5,11 @@ jobs:
     vmImage: 'vs2017-win2016'
 
   steps:
-  - script: |
-      nuget sources Add -Name CustomPackages -Source TakeWing.Neo.Multiownable.Tests
-    displayName: 'Add source path'
-
+  - task: NuGet@0
+    inputs:
+      command: sources
+      arguments: Add -Name CustomPackages -Source TakeWing.Neo.Multiownable.Tests
+  
   - task: NuGetCommand@2
     inputs:
       command: 'restore'
