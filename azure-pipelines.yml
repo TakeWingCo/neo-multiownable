@@ -8,7 +8,7 @@ jobs:
   - task: NuGetCommand@2
     inputs:
       command: custom
-      arguments: source Add -Name CustomPackages -Source TakeWing.Neo.Multiownable.Tests
+      arguments: source Add -Name CustomPackages -Source ./TakeWing.Neo.Multiownable.Tests
   
   - task: NuGetCommand@2
     inputs:
