@@ -7,6 +7,24 @@ jobs:
   steps:
   - task: NuGetCommand@2
     inputs:
+      command: custom
+      arguments: source add -Name Neo -Source TakeWing.Neo.Multiownable.Tests
+    displayName: 'Added path to the packages'
+
+  - task: NuGetCommand@2
+    inputs:
+      command: custom
+      arguments: source list
+    displayName: 'List sources'
+
+  - task: NuGetCommand@2
+    inputs:
+      command: custom
+      arguments: install Neo.Debugger.Core
+    displayName: 'Install Neo.Debugger.Core'
+
+  - task: NuGetCommand@2
+    inputs:
       command: restore
 
   - script: |
