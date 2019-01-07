@@ -5,6 +5,10 @@ jobs:
     vmImage: 'vs2017-win2016'
 
   steps:
+  - script: |
+      nuget sources Add -Name CustomPackages -Source TakeWing.Neo.Multiownable.Tests
+    displayName: 'Add source path'
+
   - task: NuGetCommand@2
     inputs:
       command: 'restore'
@@ -12,7 +16,3 @@ jobs:
   - script: |
       dotnet build TakeWing.Neo.Multiownable\TakeWing.Neo.Multiownable.csproj
     displayName: 'Build multiownable'
-
-  - script: |
-      dotnet build TakeWing.Neo.Multiownable.SmartContractsForTests\TakeWing.Neo.Multiownable.SmartContractsForTests.csproj
-    displayName: 'Build smart contract'
