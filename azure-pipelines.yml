@@ -5,10 +5,10 @@ jobs:
     vmImage: 'vs2017-win2016'
 
   steps:
-  - task: NuGet@0
+  - task: NuGetCommand@2
     inputs:
-      command: sources
-      arguments: Add -Name CustomPackages -Source TakeWing.Neo.Multiownable.Tests
+      command: custom
+      arguments: source Add -Name CustomPackages -Source TakeWing.Neo.Multiownable.Tests
   
   - task: NuGetCommand@2
     inputs:
