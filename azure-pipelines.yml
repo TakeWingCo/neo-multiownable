@@ -8,7 +8,13 @@ jobs:
   - script: |
       xcopy TakeWing.Neo.Multiownable.Tests\Neo.Debugger.Core.1.0.0.nupkg "C:\Program Files (x86)\Microsoft SDKs\NuGetPackages\"
       xcopy TakeWing.Neo.Multiownable.Tests\Neo.Emulator.1.0.0.nupkg "C:\Program Files (x86)\Microsoft SDKs\NuGetPackages\"
-    displayName: 'Add packages'
+    displayName: 'Copy packages'
+
+  - task: NuGetCommand@2
+    inputs:
+      command: custom
+      arguments: source add -Name CustomPackages -Source "C:\Program Files (x86)\Microsoft SDKs\NuGetPackages\"
+    displayName: 'Add packages source'
 
   - task: NuGetCommand@2
     inputs:
