@@ -51,7 +51,6 @@ jobs:
       solution: TakeWing.Neo.Multiownable.Tests\TakeWing.Neo.Multiownable.Tests.csproj
     displayName: 'Build Multiownable.Tests'
 
-  - task: VSTest@2
-    inputs:
-      testSelector: testRun
-  displayName: 'Run Multiownable.Tests'
+  - script: |
+      dotnet test TakeWing.Neo.Multiownable.Tests\TakeWing.Neo.Multiownable.Tests.csproj
+    displayName: 'Run Multiownable.Tests'
