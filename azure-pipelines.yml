@@ -36,8 +36,9 @@ jobs:
       xcopy neo-debugger-tools\NEO-Compiler\bin\Debug\* TakeWing.Neo.Multiownable.SmartContractsForTests\bin\Debug\
     displayName: 'Build and copy NeoCompiler'
 
-  - script: |
-      dotnet build TakeWing.Neo.Multiownable\TakeWing.Neo.Multiownable.csproj
+  - task: MsBuild@1
+    inputs:
+      solution: TakeWing.Neo.Multiownable\TakeWing.Neo.Multiownable.csproj
     displayName: 'Build Multiownable'
 
   - task: MsBuild@1
@@ -49,3 +50,8 @@ jobs:
     inputs:
       solution: TakeWing.Neo.Multiownable.Tests\TakeWing.Neo.Multiownable.Tests.csproj
     displayName: 'Build Multiownable.Tests'
+
+  - task: VSTest@2
+    inputs:
+      testSelector: testRun
+  displayName: 'Run Multiownable.Tests'
