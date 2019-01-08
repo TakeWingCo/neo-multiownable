@@ -2,9 +2,9 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Neo.Debugger.Core.Utils;
 using Neo.Emulation.API;
+using Neo.Lux.Cryptography;
 using Neo.Lux.Utils;
 using Neo.VM.Types;
-using Neo.Emulation;
 
 namespace TakeWing.Neo.Multiownable.Tests
 {
@@ -26,8 +26,8 @@ namespace TakeWing.Neo.Multiownable.Tests
 
         private DebugManager Debugger;
         private TestContext TestContextInstance;
-
-        private static System.String[] PublicKeys;
+        
+        private static KeyPair[] keyPairs;
 
         private void OnLogMessage(System.String msg)
         {
@@ -37,15 +37,12 @@ namespace TakeWing.Neo.Multiownable.Tests
         [ClassInitialize]
         public static void Setup(TestContext testContext)
         {
-            PublicKeys = new System.String[5];
-            PublicKeys[0] = "0218c0828e52456243ef56e3df865a55f3c6f83e291ff689a5a841a1bac6ab646b";
-            PublicKeys[1] = "020e55e594e4aa0c7d2759327b45cb640a595978507f7a67ab1e401657efb452ce";
-            PublicKeys[2] = "027f13d9e6ce080d18587e505f70e2f0667c3a59fae80bedb9b4f29575821ff7b0";
-            PublicKeys[3] = "0383592150122b607448793522aa596f366623036540d8d1354914cf4057e19ad0";
-            PublicKeys[4] = "032fd6fa29d1504731f2292a37527f18a5046b2c627a954f2aaa2b359694613a59";
-
-            //var keyPair = DebuggerUtils.GetKeyFromString("347bc2bd9eb7b9f41a217a26dc5a3d2a3c25ece1c8bff1d5a146aaf4156e3436");
-            //Runtime.invokerKeys = keyPair;
+            keyPairs = new KeyPair[5];
+            keyPairs[0] = DebuggerUtils.GetKeyFromString("55bf86005a406de10be23a63cfc04770c4902b830d3b83071cdf13a240a645b2");
+            keyPairs[1] = DebuggerUtils.GetKeyFromString("3cec35ae9900c69ae369cd793486c63814ad3380cc5de62d3daec45c4da1c4ee");
+            keyPairs[2] = DebuggerUtils.GetKeyFromString("3a7764d6779f328bcad737fa08e2fd331aba45e5a3b9104923be233e7d0a569f");
+            keyPairs[3] = DebuggerUtils.GetKeyFromString("dcecf06f5cb3b6f39678b4f550e5a65789b7f6e8931a339a525e9c2e64e5394c");
+            keyPairs[4] = DebuggerUtils.GetKeyFromString("132a7996a6183221d21a767b77fe3afc331e5fe553d28a633364ae951a1fa841");
         }
 
         [TestInitialize]
@@ -53,7 +50,7 @@ namespace TakeWing.Neo.Multiownable.Tests
         {
             Debugger = new DebugManager();
             Debugger.LoadContract(@"..\..\..\TakeWing.Neo.Multiownable.SmartContractsForTests\bin\Debug\TakeWing.Neo.Multiownable.SmartContractsForTests.avm");
-            Debugger.Emulator.checkWitnessMode = CheckWitnessMode.AlwaysTrue;
+            Runtime.invokerKeys = keyPairs[0];
 
             Runtime.OnLogMessage = OnLogMessage;
         }
@@ -63,7 +60,11 @@ namespace TakeWing.Neo.Multiownable.Tests
         {
             var operation = "TransferOwnership";
 
-            var args = $"\"{operation}\",[\"0x{PublicKeys[0]}\", 5, \"0x{PublicKeys[0]}\", \"0x{PublicKeys[1]}\", \"0x{PublicKeys[2]}\", \"0x{PublicKeys[3]}\", \"0x{PublicKeys[4]}\"]";
+            var args = $"\"{operation}\",[\"0x{keyPairs[0].CompressedPublicKey.ToHexString()}\", 5, \"0x{keyPairs[0].CompressedPublicKey.ToHexString()}\", " +
+                                                                                                  $"\"0x{keyPairs[1].CompressedPublicKey.ToHexString()}\", " +
+                                                                                                  $"\"0x{keyPairs[2].CompressedPublicKey.ToHexString()}\", " +
+                                                                                                  $"\"0x{keyPairs[3].CompressedPublicKey.ToHexString()}\", " +
+                                                                                                  $"\"0x{keyPairs[4].CompressedPublicKey.ToHexString()}\"]";
             var inputs = DebuggerUtils.GetArgsListAsNode(args);
 
             var script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
@@ -72,6 +73,7 @@ namespace TakeWing.Neo.Multiownable.Tests
 
             var result = Debugger.Emulator.GetOutput();
 
+            // Check if setting up new owners is successful
             Assert.IsTrue(result.GetBoolean());
         }
 
@@ -83,7 +85,7 @@ namespace TakeWing.Neo.Multiownable.Tests
             var operation = "TransferOwnership";
 
             // First vote
-            var args = $"\"{operation}\",[\"0x{PublicKeys[0]}\", 1, \"0x{PublicKeys[2]}\"]";
+            var args = $"\"{operation}\",[\"0x{keyPairs[0].CompressedPublicKey.ToHexString()}\", 1, \"0x{keyPairs[2].CompressedPublicKey.ToHexString()}\"]";
             var inputs = DebuggerUtils.GetArgsListAsNode(args);
 
             var script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
@@ -91,7 +93,8 @@ namespace TakeWing.Neo.Multiownable.Tests
             Debugger.Emulator.Run();
 
             // Second vote
-            args = $"\"{operation}\",[\"0x{PublicKeys[1]}\", 1, \"0x{PublicKeys[2]}\"]";
+            Runtime.invokerKeys = keyPairs[1];
+            args = $"\"{operation}\",[\"0x{keyPairs[1].CompressedPublicKey.ToHexString()}\", 1, \"0x{keyPairs[2].CompressedPublicKey.ToHexString()}\"]";
             inputs = DebuggerUtils.GetArgsListAsNode(args);
 
             script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
@@ -99,7 +102,8 @@ namespace TakeWing.Neo.Multiownable.Tests
             Debugger.Emulator.Run();
 
             // Third vote
-            args = $"\"{operation}\",[\"0x{PublicKeys[2]}\", 1, \"0x{PublicKeys[2]}\"]";
+            Runtime.invokerKeys = keyPairs[2];
+            args = $"\"{operation}\",[\"0x{keyPairs[2].CompressedPublicKey.ToHexString()}\", 1, \"0x{keyPairs[2].CompressedPublicKey.ToHexString()}\"]";
             inputs = DebuggerUtils.GetArgsListAsNode(args);
 
             script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
@@ -123,7 +127,7 @@ namespace TakeWing.Neo.Multiownable.Tests
             // Check if correct owner
             operation = "IsOwner";
 
-            args = $"\"{operation}\",[\"0x{PublicKeys[2]}\"]";
+            args = $"\"{operation}\",[\"0x{keyPairs[2].CompressedPublicKey.ToHexString()}\"]";
             inputs = DebuggerUtils.GetArgsListAsNode(args);
 
             script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
@@ -132,6 +136,7 @@ namespace TakeWing.Neo.Multiownable.Tests
 
             result = Debugger.Emulator.GetOutput();
 
+            // Check if transferring is successful
             Assert.IsTrue(result.GetBoolean());
         }
 
@@ -143,7 +148,7 @@ namespace TakeWing.Neo.Multiownable.Tests
             var operation = "Call";
 
             // First vote
-            var args = $"\"{operation}\",[\"0x{PublicKeys[0]}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
+            var args = $"\"{operation}\",[\"0x{keyPairs[0].CompressedPublicKey.ToHexString()}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
             var inputs = DebuggerUtils.GetArgsListAsNode(args);
 
             var script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
@@ -151,7 +156,8 @@ namespace TakeWing.Neo.Multiownable.Tests
             Debugger.Emulator.Run();
 
             // Second vote
-            args = $"\"{operation}\",[\"0x{PublicKeys[1]}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
+            Runtime.invokerKeys = keyPairs[1];
+            args = $"\"{operation}\",[\"0x{keyPairs[1].CompressedPublicKey.ToHexString()}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
             inputs = DebuggerUtils.GetArgsListAsNode(args);
 
             script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
@@ -159,7 +165,8 @@ namespace TakeWing.Neo.Multiownable.Tests
             Debugger.Emulator.Run();
 
             //Third vote
-            args = $"\"{operation}\",[\"0x{PublicKeys[2]}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
+            Runtime.invokerKeys = keyPairs[2];
+            args = $"\"{operation}\",[\"0x{keyPairs[2].CompressedPublicKey.ToHexString()}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
             inputs = DebuggerUtils.GetArgsListAsNode(args);
 
             script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
@@ -168,6 +175,7 @@ namespace TakeWing.Neo.Multiownable.Tests
 
             var result = Debugger.Emulator.GetOutput();
 
+            // Check if voting is finished successfully with enough votes
             Assert.IsTrue(result.GetBoolean());
         }
 
@@ -179,7 +187,7 @@ namespace TakeWing.Neo.Multiownable.Tests
             var operation = "Call";
 
             // First vote
-            var args = $"\"{operation}\",[\"0x{PublicKeys[0]}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
+            var args = $"\"{operation}\",[\"0x{keyPairs[0].CompressedPublicKey.ToHexString()}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
             var inputs = DebuggerUtils.GetArgsListAsNode(args);
 
             var script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
@@ -187,7 +195,8 @@ namespace TakeWing.Neo.Multiownable.Tests
             Debugger.Emulator.Run();
 
             // Second vote
-            args = $"\"{operation}\",[\"0x{PublicKeys[1]}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
+            Runtime.invokerKeys = keyPairs[1];
+            args = $"\"{operation}\",[\"0x{keyPairs[1].CompressedPublicKey.ToHexString()}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
             inputs = DebuggerUtils.GetArgsListAsNode(args);
 
             script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
@@ -196,6 +205,7 @@ namespace TakeWing.Neo.Multiownable.Tests
 
             var result = Debugger.Emulator.GetOutput();
 
+            // Check if voting is unfinished with not enough votes
             Assert.IsFalse(result.GetBoolean());
         }
 
@@ -207,7 +217,7 @@ namespace TakeWing.Neo.Multiownable.Tests
             var operation = "Call";
 
             // First vote
-            var args = $"\"{operation}\",[\"0x{PublicKeys[0]}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
+            var args = $"\"{operation}\",[\"0x{keyPairs[0].CompressedPublicKey.ToHexString()}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
             var inputs = DebuggerUtils.GetArgsListAsNode(args);
 
             var script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
@@ -215,7 +225,8 @@ namespace TakeWing.Neo.Multiownable.Tests
             Debugger.Emulator.Run();
 
             // Second vote
-            args = $"\"{operation}\",[\"0x{PublicKeys[1]}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
+            Runtime.invokerKeys = keyPairs[1];
+            args = $"\"{operation}\",[\"0x{keyPairs[1].CompressedPublicKey.ToHexString()}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
             inputs = DebuggerUtils.GetArgsListAsNode(args);
 
             script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
@@ -226,7 +237,8 @@ namespace TakeWing.Neo.Multiownable.Tests
             Debugger.Emulator.timestamp += 2000;
 
             // Third vote
-            args = $"\"{operation}\",[\"0x{PublicKeys[2]}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
+            Runtime.invokerKeys = keyPairs[2];
+            args = $"\"{operation}\",[\"0x{keyPairs[2].CompressedPublicKey.ToHexString()}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
             inputs = DebuggerUtils.GetArgsListAsNode(args);
 
             script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
@@ -235,6 +247,7 @@ namespace TakeWing.Neo.Multiownable.Tests
 
             var result = Debugger.Emulator.GetOutput();
 
+            // Check if voting is unfinished after expire time
             Assert.IsFalse(result.GetBoolean());
         }
 
@@ -246,7 +259,7 @@ namespace TakeWing.Neo.Multiownable.Tests
             var operation = "Call";
 
             // First vote
-            var args = $"\"{operation}\",[\"0x{PublicKeys[0]}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
+            var args = $"\"{operation}\",[\"0x{keyPairs[0].CompressedPublicKey.ToHexString()}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
             var inputs = DebuggerUtils.GetArgsListAsNode(args);
 
             var script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
@@ -254,7 +267,8 @@ namespace TakeWing.Neo.Multiownable.Tests
             Debugger.Emulator.Run();
 
             // Second vote
-            args = $"\"{operation}\",[\"0x{PublicKeys[1]}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
+            Runtime.invokerKeys = keyPairs[1];
+            args = $"\"{operation}\",[\"0x{keyPairs[1].CompressedPublicKey.ToHexString()}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
             inputs = DebuggerUtils.GetArgsListAsNode(args);
 
             script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
@@ -265,7 +279,8 @@ namespace TakeWing.Neo.Multiownable.Tests
             Debugger.Emulator.timestamp += 2000;
 
             // First vote
-            args = $"\"{operation}\",[\"0x{PublicKeys[0]}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
+            Runtime.invokerKeys = keyPairs[0];
+            args = $"\"{operation}\",[\"0x{keyPairs[0].CompressedPublicKey.ToHexString()}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
             inputs = DebuggerUtils.GetArgsListAsNode(args);
 
             script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
@@ -273,7 +288,8 @@ namespace TakeWing.Neo.Multiownable.Tests
             Debugger.Emulator.Run();
 
             // Second vote
-            args = $"\"{operation}\",[\"0x{PublicKeys[0]}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
+            Runtime.invokerKeys = keyPairs[1];
+            args = $"\"{operation}\",[\"0x{keyPairs[1].CompressedPublicKey.ToHexString()}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
             inputs = DebuggerUtils.GetArgsListAsNode(args);
 
             script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
@@ -281,7 +297,8 @@ namespace TakeWing.Neo.Multiownable.Tests
             Debugger.Emulator.Run();
 
             // Third vote
-            args = $"\"{operation}\",[\"0x{PublicKeys[0]}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
+            Runtime.invokerKeys = keyPairs[2];
+            args = $"\"{operation}\",[\"0x{keyPairs[2].CompressedPublicKey.ToHexString()}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
             inputs = DebuggerUtils.GetArgsListAsNode(args);
 
             script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
@@ -290,6 +307,7 @@ namespace TakeWing.Neo.Multiownable.Tests
 
             var result = Debugger.Emulator.GetOutput();
 
+            // Check if voting is finished successfully after starting it after timeout
             Assert.IsTrue(result.GetBoolean());
         }
 
@@ -301,7 +319,7 @@ namespace TakeWing.Neo.Multiownable.Tests
             var operation = "Call";
 
             // First vote
-            var args = $"\"{operation}\",[\"0x{PublicKeys[0]}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 5, 1000, 0]";
+            var args = $"\"{operation}\",[\"0x{keyPairs[0].CompressedPublicKey.ToHexString()}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 5, 1000, 0]";
             var inputs = DebuggerUtils.GetArgsListAsNode(args);
 
             var script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
@@ -309,7 +327,8 @@ namespace TakeWing.Neo.Multiownable.Tests
             Debugger.Emulator.Run();
 
             // Second vote
-            args = $"\"{operation}\",[\"0x{PublicKeys[1]}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 5, 1000, 1, \"string\"]";
+            Runtime.invokerKeys = keyPairs[1];
+            args = $"\"{operation}\",[\"0x{keyPairs[1].CompressedPublicKey.ToHexString()}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 5, 1000, 1, \"string\"]";
             inputs = DebuggerUtils.GetArgsListAsNode(args);
 
             script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
@@ -317,7 +336,8 @@ namespace TakeWing.Neo.Multiownable.Tests
             Debugger.Emulator.Run();
 
             // Third vote
-            args = $"\"{operation}\",[\"0x{PublicKeys[2]}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 5, 500, 0]";
+            Runtime.invokerKeys = keyPairs[2];
+            args = $"\"{operation}\",[\"0x{keyPairs[2].CompressedPublicKey.ToHexString()}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 5, 500, 0]";
             inputs = DebuggerUtils.GetArgsListAsNode(args);
 
             script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
@@ -325,7 +345,8 @@ namespace TakeWing.Neo.Multiownable.Tests
             Debugger.Emulator.Run();
 
             // Forth vote
-            args = $"\"{operation}\",[\"0x{PublicKeys[3]}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 4, 1000, 0]";
+            Runtime.invokerKeys = keyPairs[3];
+            args = $"\"{operation}\",[\"0x{keyPairs[3].CompressedPublicKey.ToHexString()}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 4, 1000, 0]";
             inputs = DebuggerUtils.GetArgsListAsNode(args);
 
             script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
@@ -334,6 +355,7 @@ namespace TakeWing.Neo.Multiownable.Tests
 
             var result = Debugger.Emulator.GetOutput();
 
+            // Check if different arguments result in different voting
             Assert.IsFalse(result.GetBoolean());
         }
 
@@ -344,7 +366,7 @@ namespace TakeWing.Neo.Multiownable.Tests
 
             var operation = "GetIndexByOwner";
 
-            var args = $"\"{operation}\",[\"0x{PublicKeys[2]}\"]";
+            var args = $"\"{operation}\",[\"0x{keyPairs[2].CompressedPublicKey.ToHexString()}\"]";
             var inputs = DebuggerUtils.GetArgsListAsNode(args);
 
             var script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
@@ -353,6 +375,7 @@ namespace TakeWing.Neo.Multiownable.Tests
 
             var result = Debugger.Emulator.GetOutput();
 
+            // Check if returned index is correct with existent owner
             Assert.AreEqual(BigInteger.Parse("3"), result.GetBigInteger());
         }
 
@@ -372,6 +395,7 @@ namespace TakeWing.Neo.Multiownable.Tests
 
             var result = Debugger.Emulator.GetOutput();
 
+            // Check if returned index is null with non existent owner
             Assert.AreEqual("", result.GetString());
         }
 
@@ -391,7 +415,8 @@ namespace TakeWing.Neo.Multiownable.Tests
 
             var result = Debugger.Emulator.GetOutput();
 
-            CollectionAssert.AreEqual(PublicKeys[1].HexToBytes(), result.GetByteArray());
+            // Check if return owner is correct with existent index
+            CollectionAssert.AreEqual(keyPairs[1].CompressedPublicKey, result.GetByteArray());
         }
 
         [TestMethod]
@@ -410,6 +435,7 @@ namespace TakeWing.Neo.Multiownable.Tests
 
             var result = Debugger.Emulator.GetOutput();
 
+            // Check if returned owner is null with non existent index
             Assert.AreEqual("", result.GetString());
         }
 
@@ -420,7 +446,7 @@ namespace TakeWing.Neo.Multiownable.Tests
 
             var operation = "IsOwner";
 
-            var args = $"\"{operation}\",[\"0x{PublicKeys[3]}\"]";
+            var args = $"\"{operation}\",[\"0x{keyPairs[3].CompressedPublicKey.ToHexString()}\"]";
             var inputs = DebuggerUtils.GetArgsListAsNode(args);
 
             var script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
@@ -429,6 +455,7 @@ namespace TakeWing.Neo.Multiownable.Tests
 
             var result = Debugger.Emulator.GetOutput();
 
+            // Check if existent owner is considered as owner
             Assert.IsTrue(result.GetBoolean());
         }
 
@@ -448,6 +475,7 @@ namespace TakeWing.Neo.Multiownable.Tests
 
             var result = Debugger.Emulator.GetOutput();
 
+            // Check if non existent owner is not considered as owner
             Assert.IsFalse(result.GetBoolean());
         }
 
@@ -467,8 +495,9 @@ namespace TakeWing.Neo.Multiownable.Tests
 
             var result = Debugger.Emulator.GetOutput() as Array;
 
+            // Check if returned owners are correct
             for(var i = 0; i < 5; i++)
-                CollectionAssert.AreEqual(PublicKeys[i].HexToBytes(), result[i].GetByteArray());
+                CollectionAssert.AreEqual(keyPairs[i].CompressedPublicKey, result[i].GetByteArray());
         }
 
         [TestMethod]
@@ -487,6 +516,7 @@ namespace TakeWing.Neo.Multiownable.Tests
 
             var result = Debugger.Emulator.GetOutput();
 
+            // Check if generation of owners is correct
             Assert.AreEqual(BigInteger.Parse("1"), result.GetBigInteger());
         }
 
@@ -506,6 +536,7 @@ namespace TakeWing.Neo.Multiownable.Tests
 
             var result = Debugger.Emulator.GetOutput();
 
+            // Check if number of owners is correct
             Assert.AreEqual(BigInteger.Parse("5"), result.GetBigInteger());
         }
     }
