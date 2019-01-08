@@ -7,11 +7,9 @@ jobs:
   steps:
   - script: |
       git clone https://github.com/CityOfZion/neo-debugger-tools
-    displayName: 'Download NeoCompiler'
-
-  - script: |
+      del neo-debugger-tools\NEO-Compiler\Properties\AssemblyInfo.cs
       dotnet build neo-debugger-tools\NEO-Compiler\neon.csproj
-    displayName: 'Build NeoCompiler'
+    displayName: 'Download and Build NeoCompiler'
 
   - script: |
       xcopy TakeWing.Neo.Multiownable.Tests\Neo.Debugger.Core.1.0.0.nupkg "C:\Program Files (x86)\Microsoft SDKs\NuGetPackages\"
@@ -29,11 +27,6 @@ jobs:
       command: custom
       arguments: install Neo.Emulator -OutputDirectory packages
     displayName: 'Install Neo.Emulator'
-
-  - task: NuGetCommand@2
-    inputs:
-      command: restore
-    displayName: 'Restore nuget packages'
 
   - script: |
       dotnet build TakeWing.Neo.Multiownable\TakeWing.Neo.Multiownable.csproj
