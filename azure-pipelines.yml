@@ -13,13 +13,13 @@ jobs:
   - task: NuGetCommand@2
     inputs:
       command: custom
-      arguments: install Neo.Debugger.Core
+      arguments: install Neo.Debugger.Core -OutputDirectory packages
     displayName: 'Install Neo.Debugger.Core'
 
   - task: NuGetCommand@2
     inputs:
       command: custom
-      arguments: install Neo.Emulator
+      arguments: install Neo.Emulator -OutputDirectory packages
     displayName: 'Install Neo.Emulator'
 
   - task: NuGetCommand@2
