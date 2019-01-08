@@ -18,6 +18,12 @@ jobs:
 
   - task: NuGetCommand@2
     inputs:
+      command: custom
+      arguments: install Neo.Emulator
+    displayName: 'Install Neo.Emulator'
+
+  - task: NuGetCommand@2
+    inputs:
       command: restore
 
   - script: |
