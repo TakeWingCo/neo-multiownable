@@ -45,6 +45,7 @@ jobs:
       solution: TakeWing.Neo.Multiownable.SmartContractsForTests\TakeWing.Neo.Multiownable.SmartContractsForTests.csproj
     displayName: 'Build Multiownable.SmartContractForTests'
 
-  - script: |
-      dotnet build TakeWing.Neo.Multiownable.Tests\TakeWing.Neo.Multiownable.Tests.csproj
+  - task: MsBuild@1
+    inputs:
+      solution: TakeWing.Neo.Multiownable.Tests\TakeWing.Neo.Multiownable.Tests.csproj
     displayName: 'Build Multiownable.Tests'
