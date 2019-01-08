@@ -17,7 +17,7 @@ jobs:
   - task: NuGetCommand@2
     inputs:
       command: custom
-      arguments: install Neo.Debugger.Core -OutputDirectory packages -Source "Microsoft Visual Studio Offline Packages"
+      arguments: install Neo.Debugger.Core -OutputDirectory packages
     displayName: 'Install Neo.Debugger.Core'
 
   - task: NuGetCommand@2
