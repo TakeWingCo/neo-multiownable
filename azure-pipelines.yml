@@ -5,8 +5,6 @@ jobs:
     vmImage: 'vs2017-win2016'
 
   steps:
-  - script: set
-
   - script: |
       git clone https://github.com/CityOfZion/neo-debugger-tools
     displayName: 'Download NeoCompiler'
@@ -36,6 +34,11 @@ jobs:
   - script: |
       dotnet build neo-debugger-tools\NEO-Compiler\NEO-Compiler.csproj
     displayName: 'Build NeoCompiler'
+
+  - script: |
+      xcopy neo-debugger-tools\NEO-Compiler\bin\Debug\neon.exe "C:\Program Files (x86)\"
+      setx /M PATH "%PATH%;C:\Program Files (x86)\"
+      set
 
   - script: |
       dotnet build TakeWing.Neo.Multiownable\TakeWing.Neo.Multiownable.csproj
