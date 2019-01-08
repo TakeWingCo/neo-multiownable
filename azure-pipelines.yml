@@ -6,6 +6,11 @@ jobs:
 
   steps:
   - script: |
+      cd ..
+      git clone https://github.com/CityOfZion/neo-debugger-tools
+    displayName: 'Download neo compiler'
+
+  - script: |
       xcopy TakeWing.Neo.Multiownable.Tests\Neo.Debugger.Core.1.0.0.nupkg "C:\Program Files (x86)\Microsoft SDKs\NuGetPackages\"
       xcopy TakeWing.Neo.Multiownable.Tests\Neo.Emulator.1.0.0.nupkg "C:\Program Files (x86)\Microsoft SDKs\NuGetPackages\"
     displayName: 'Copy packages'
@@ -26,12 +31,6 @@ jobs:
     inputs:
       command: restore
     displayName: 'Restore nuget packages'
-
-  - script: |
-      cd ..
-      git clone https://github.com/CityOfZion/neo-debugger-tools
-      cd neo-multiownable
-    displayName: 'Download neo compiler'
 
   - script: |
       dotnet build TakeWing.Neo.Multiownable\TakeWing.Neo.Multiownable.csproj
