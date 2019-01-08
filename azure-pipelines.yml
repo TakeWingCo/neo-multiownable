@@ -36,14 +36,10 @@ jobs:
     displayName: 'Build NeoCompiler'
 
   - script: |
-      xcopy neo-debugger-tools\NEO-Compiler\bin\Debug\neon.exe "C:\Program Files (x86)\"
-      setx /M PATH "%PATH%;C:\Program Files (x86)\"
-      set
-
-  - script: |
       dotnet build TakeWing.Neo.Multiownable\TakeWing.Neo.Multiownable.csproj
     displayName: 'Build Multiownable'
 
   - script: |
+      xcopy neo-debugger-tools\NEO-Compiler\bin\Debug\* TakeWing.Neo.Multiownable.SmartContractsForTests\bin\Debug\
       dotnet build TakeWing.Neo.Multiownable.SmartContractsForTests\TakeWing.Neo.Multiownable.SmartContractsForTests.csproj
     displayName: 'Build Multiownable.SmartContractForTests'
