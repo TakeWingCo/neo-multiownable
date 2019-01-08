@@ -5,7 +5,7 @@ jobs:
     vmImage: 'vs2017-win2016'
 
   steps:
-  - script: echo $(System.Path)
+  - script: set
 
   - script: |
       git clone https://github.com/CityOfZion/neo-debugger-tools
