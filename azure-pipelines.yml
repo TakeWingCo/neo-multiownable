@@ -8,7 +8,7 @@ jobs:
   - script: |
       git clone https://github.com/CityOfZion/neo-debugger-tools
       del neo-debugger-tools\NEO-Compiler\Properties\AssemblyInfo.cs
-      dotnet build --force neo-debugger-tools\NEO-Compiler\neon.csproj
+      dotnet build neo-debugger-tools\NEO-Compiler\NEO-Compiler.csproj
     displayName: 'Download and Build NeoCompiler'
 
   - script: |
