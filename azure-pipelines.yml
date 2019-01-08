@@ -32,7 +32,7 @@ jobs:
     displayName: 'Restore nuget packages'
 
   - script: |
-      dotnet build neo-debugger-tools-master\NEO-Compiler\neon.csproj
+      dotnet build neo-debugger-tools\NEO-Compiler\neon.csproj
     displayName: 'Build NeoCompiler'
 
   - script: |
