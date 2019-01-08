@@ -13,8 +13,8 @@ jobs:
   - task: NuGetCommand@2
     inputs:
       command: custom
-      arguments: source list
-    displayName: 'Add packages source'
+      arguments: install Neo.Debugger.Core
+    displayName: 'Install Neo.Debugger.Core'
 
   - task: NuGetCommand@2
     inputs:
