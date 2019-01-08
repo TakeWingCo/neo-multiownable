@@ -13,7 +13,7 @@ jobs:
   - task: NuGetCommand@2
     inputs:
       command: custom
-      arguments: source add -Name CustomPackages -Source "C:\Program Files (x86)\Microsoft SDKs\NuGetPackages\"
+      arguments: source list
     displayName: 'Add packages source'
 
   - task: NuGetCommand@2
