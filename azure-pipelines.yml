@@ -8,6 +8,7 @@ jobs:
   - script: |
       cd ..
       git clone https://github.com/CityOfZion/neo-debugger-tools
+      dir
     displayName: 'Download neo compiler'
 
   - script: |
