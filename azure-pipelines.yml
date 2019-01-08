@@ -32,7 +32,6 @@ jobs:
     displayName: 'Restore Packages'
 
   - script: |
-      del neo-debugger-tools\NEO-Compiler\Properties\AssemblyInfo.cs
       dotnet build neo-debugger-tools\NEO-Compiler\NEO-Compiler.csproj
     displayName: 'Build NeoCompiler'
 
