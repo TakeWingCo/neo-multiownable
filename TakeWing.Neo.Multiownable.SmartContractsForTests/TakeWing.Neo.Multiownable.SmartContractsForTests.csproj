@@ -67,7 +67,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Contract1.cs" />
+    <Compile Include="SmartConractForTests.cs" />
     <Compile Include="Multiownable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
