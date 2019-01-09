@@ -64,8 +64,3 @@ jobs:
       testSelector: 'testAssemblies'
       testAssemblyVer2: TakeWing.Neo.Multiownable.Tests\bin\Debug\TakeWing.Neo.Multiownable.Tests.dll
     displayName: 'Run Multiownable.Tests'
-
-  - task: PublishTestResults@2
-    inputs:
-      testRunner: VSTest
-      testResultsFiles: '**/TEST-*.trx'
