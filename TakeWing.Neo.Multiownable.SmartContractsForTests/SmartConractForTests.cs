@@ -6,7 +6,7 @@ using Neo.SmartContract.Framework.Services.Neo;
 
 namespace TakeWing.Neo.Multiownable.SmartContractsForTests
 {
-	public class Contract1 : SmartContract
+	public class SmartConractForTests : SmartContract
 	{
 		public static Object Main(String operation, params Object[] args)
 		{
