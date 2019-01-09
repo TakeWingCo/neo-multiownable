@@ -5,10 +5,12 @@ jobs:
     vmImage: 'vs2017-win2016'
 
   steps:
+  # Download NeoCompiler
   - script: |
       git clone https://github.com/CityOfZion/neo-debugger-tools
     displayName: 'Download NeoCompiler'
 
+  # Copy packages to offline source and install them
   - script: |
       xcopy TakeWing.Neo.Multiownable.Tests\Neo.Debugger.Core.1.0.0.nupkg "C:\Program Files (x86)\Microsoft SDKs\NuGetPackages\"
       xcopy TakeWing.Neo.Multiownable.Tests\Neo.Emulator.1.0.0.nupkg "C:\Program Files (x86)\Microsoft SDKs\NuGetPackages\"
@@ -26,31 +28,37 @@ jobs:
       arguments: install Neo.Emulator -OutputDirectory packages -Source "Microsoft Visual Studio Offline Packages"
     displayName: 'Install Neo.Emulator'
 
+  # Restore all the other packages
   - task: NuGetCommand@2
     inputs:
       command: restore
     displayName: 'Restore Packages'
 
+  # Build NeoCompiler and copy it to Debug directory to use it
   - script: |
       dotnet build neo-debugger-tools\NEO-Compiler\NEO-Compiler.csproj
       xcopy neo-debugger-tools\NEO-Compiler\bin\Debug\* TakeWing.Neo.Multiownable.SmartContractsForTests\bin\Debug\
     displayName: 'Build and copy NeoCompiler'
 
+  # Build Multiownable project
   - task: MsBuild@1
     inputs:
       solution: TakeWing.Neo.Multiownable\TakeWing.Neo.Multiownable.csproj
     displayName: 'Build Multiownable'
 
+  # Build smart contract for tests
   - task: MsBuild@1
     inputs:
       solution: TakeWing.Neo.Multiownable.SmartContractsForTests\TakeWing.Neo.Multiownable.SmartContractsForTests.csproj
     displayName: 'Build Multiownable.SmartContractForTests'
 
+  # Build tests
   - task: MsBuild@1
     inputs:
       solution: TakeWing.Neo.Multiownable.Tests\TakeWing.Neo.Multiownable.Tests.csproj
     displayName: 'Build Multiownable.Tests'
 
+  # Run all tests
   - script: |
-      dotnet test TakeWing.Neo.Multiownable.Tests\TakeWing.Neo.Multiownable.Tests.csproj
+      dotnet test TakeWing.Neo.Multiownable.Tests\TakeWing.Neo.Multiownable.Tests.csproj --filter Name=SetOwnershipTest
     displayName: 'Run Multiownable.Tests'
