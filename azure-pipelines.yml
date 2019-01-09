@@ -63,4 +63,6 @@ jobs:
     inputs:
       testSelector: 'testAssemblies'
       testAssemblyVer2: TakeWing.Neo.Multiownable.Tests\bin\Debug\TakeWing.Neo.Multiownable.Tests.dll
+      runTestsInIsolation: True
+      codeCoverageEnabled: True
     displayName: 'Run Multiownable.Tests'
