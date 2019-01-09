@@ -60,5 +60,5 @@ jobs:
 
   # Run all tests
   - script: |
-      dotnet test TakeWing.Neo.Multiownable.Tests\TakeWing.Neo.Multiownable.Tests.csproj --filter Name=SetOwnershipTest
+      dotnet test TakeWing.Neo.Multiownable.Tests\TakeWing.Neo.Multiownable.Tests.csproj
     displayName: 'Run Multiownable.Tests'
