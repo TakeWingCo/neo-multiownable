@@ -61,8 +61,8 @@ jobs:
   # Run all tests
   - task: VSTest@2
     inputs:
-      testSelector: 'testAssemblies' # Options: testAssemblies, testPlan, testRun
-      testAssemblyVer2: '**\*test*.dll!**\*TestAdapter.dll!**\obj\**'
+      testSelector: 'testAssemblies'
+      testAssemblyVer2: TakeWing.Neo.Multiownable.Tests\bin\Debug\TakeWing.Neo.Multiownable.Tests.dll
     displayName: 'Run Multiownable.Tests'
 
   - task: PublishTestResults@2
