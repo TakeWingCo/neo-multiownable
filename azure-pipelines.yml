@@ -62,3 +62,8 @@ jobs:
   - script: |
       dotnet test TakeWing.Neo.Multiownable.Tests\TakeWing.Neo.Multiownable.Tests.csproj
     displayName: 'Run Multiownable.Tests'
+
+  - task: PublishTestResults@2
+    inputs:
+      testRunner: VSTest
+      testResultsFiles: '**/TEST-*.trx'
