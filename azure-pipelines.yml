@@ -32,7 +32,7 @@ jobs:
   - task: NuGetCommand@2
     inputs:
       command: custom
-      arguments: restore neo-debugger-tools\NEO-Compiler\NEO-Compiler.csproj
+      arguments: restore neo-debugger-tools\NEO-Compiler\NEO-Compiler.csproj -PackagesDirectory packages
 
   - script: |
       dotnet restore TakeWing.Neo.Multiownable.MSTests\TakeWing.Neo.Multiownable.MSTests.csproj
