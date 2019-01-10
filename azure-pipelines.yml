@@ -34,11 +34,11 @@ jobs:
       command: custom
       arguments: restore neo-debugger-tools\NEO-Compiler\NEO-Compiler.csproj -PackagesDirectory packages
     displayName: 'Restore NEO-Compiler packages'
-
-  - script: |
-      dotnet build neo-debugger-tools\NEO-Compiler\NEO-Compiler.csproj
-      xcopy neo-debugger-tools\NEO-Compiler\bin\Debug\* TakeWing.Neo.Multiownable.SmartContractsForTests\bin\Debug\
-    displayName: 'Build and copy NEO-Compiler'
+    
+  - task: MsBuild@1
+    inputs:
+      solution: neo-debugger-tools\NEO-Compiler\NEO-Compiler.csproj
+    displayName: 'Build NEO-Compiler'
 
   - task: NuGetCommand@2
     inputs:
