@@ -14,9 +14,6 @@ jobs:
   - script: |
       xcopy TakeWing.Neo.Multiownable.Tests\Neo.Debugger.Core.1.0.0.nupkg "C:\Program Files (x86)\Microsoft SDKs\NuGetPackages\"
       xcopy TakeWing.Neo.Multiownable.Tests\Neo.Emulator.1.0.0.nupkg "C:\Program Files (x86)\Microsoft SDKs\NuGetPackages\"
-
-      xcopy TakeWing.Neo.Multiownable.Tests\Neo.Debugger.Core.1.0.0.nupkg "C:\Users\VssAdministrator\.nuget\packages\"
-      xcopy TakeWing.Neo.Multiownable.Tests\Neo.Emulator.1.0.0.nupkg "C:\Users\VssAdministrator\.nuget\packages\"
     displayName: 'Copy packages'
 
   - task: NuGetCommand@2
@@ -28,7 +25,7 @@ jobs:
   - task: NuGetCommand@2
     inputs:
       command: custom
-      arguments: install Neo.Debugger.Core -OutputDirectory "C:\Users\VssAdministrator\.nuget\packages\"
+      arguments: install Neo.Debugger.Core -OutputDirectory C:\Users\VssAdministrator\.nuget\packages\
     displayName: 'Install Neo.Debugger.Core 2'
 
   - task: NuGetCommand@2
@@ -40,7 +37,7 @@ jobs:
   - task: NuGetCommand@2
     inputs:
       command: custom
-      arguments: install Neo.Emulator -OutputDirectory "C:\Users\VssAdministrator\.nuget\packages\" -Source "Microsoft Visual Studio Offline Packages"
+      arguments: install Neo.Emulator -OutputDirectory C:\Users\VssAdministrator\.nuget\packages\ -Source "Microsoft Visual Studio Offline Packages"
     displayName: 'Install Neo.Emulator 2'
 
   # Restore all the other packages
