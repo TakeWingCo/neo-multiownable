@@ -36,7 +36,7 @@ jobs:
   - task: NuGetCommand@2
     inputs:
       command: custom
-      arguments: restore TakeWing.Neo.Multiownable.sln
+      arguments: restore neo-debugger-tools\neo-dev-tools.sln
     displayName: 'Restore packages'
 
   # Build NEO-Compiler and copy it to Debug directory to use it
