@@ -16,16 +16,6 @@ jobs:
       xcopy TakeWing.Neo.Multiownable.Tests\Neo.Emulator.1.0.0.nupkg "C:\Program Files (x86)\Microsoft SDKs\NuGetPackages\"
     displayName: 'Copy packages'
 
-  - script: |
-      dotnet restore TakeWing.Neo.Multiownable.MSTests\TakeWing.Neo.Multiownable.MSTests.csproj
-    displayName: 'Core'
-
-  - task: NuGetCommand@2
-    inputs:
-      command: custom
-      arguments: install Neo.Debugger.Core -OutputDirectory packages
-    displayName: 'Install Neo.Debugger.Core'
-
   - task: NuGetCommand@2
     inputs:
       command: custom
@@ -33,9 +23,11 @@ jobs:
     displayName: 'Install Neo.Emulator'
 
   # Restore all the other packages
-  - task: NuGetCommand@2
-    inputs:
-      command: restore
+  - script: |
+      dotnet restore neo-debugger-tools\NEO-Compiler\NEO-Compiler.csproj
+      dotnet restore TakeWing.Neo.Multiownable\TakeWing.Neo.Multiownable.csproj
+      dotnet restore TakeWing.Neo.Multiownable.SmartContractsForTests\TakeWing.Neo.Multiownable.SmartContractsForTests.csproj
+      dotnet restore TakeWing.Neo.Multiownable.MSTests\TakeWing.Neo.Multiownable.MSTests.csproj
     displayName: 'Restore Packages'
 
   # Build NeoCompiler and copy it to Debug directory to use it
