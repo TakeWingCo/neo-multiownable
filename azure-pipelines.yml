@@ -55,13 +55,27 @@ jobs:
   # Build tests
   - task: MsBuild@1
     inputs:
-      solution: TakeWing.Neo.Multiownable.Tests\TakeWing.Neo.Multiownable.Tests.csproj
+      solution: TakeWing.Neo.Multiownable.MSTests\TakeWing.Neo.Multiownable.MSTests.csproj
     displayName: 'Build Multiownable.Tests'
 
   # Run all tests
   - task: VSTest@2
     inputs:
       testSelector: 'testAssemblies'
-      testAssemblyVer2: TakeWing.Neo.Multiownable.Tests\bin\Debug\TakeWing.Neo.Multiownable.Tests.dll
+      testAssemblyVer2: TakeWing.Neo.Multiownable.MSTests\bin\Debug\netcoreapp2.1\TakeWing.Neo.Multiownable.MSTests.dll
       codeCoverageEnabled: True
     displayName: 'Run Multiownable.Tests'
+
+  # Build tests
+  #- task: MsBuild@1
+  #  inputs:
+  #    solution: TakeWing.Neo.Multiownable.Tests\TakeWing.Neo.Multiownable.Tests.csproj
+  #  displayName: 'Build Multiownable.Tests'
+
+  # Run all tests
+  #- task: VSTest@2
+  #  inputs:
+  #    testSelector: 'testAssemblies'
+  #    testAssemblyVer2: TakeWing.Neo.Multiownable.Tests\bin\Debug\TakeWing.Neo.Multiownable.Tests.dll
+  #    codeCoverageEnabled: True
+  #  displayName: 'Run Multiownable.Tests'
