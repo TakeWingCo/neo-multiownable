@@ -17,7 +17,7 @@ jobs:
     displayName: 'Copy packages'
 
   - script: |
-      dotnet add TakeWing.Neo.Multiownable.MSTests\TakeWing.Neo.Multiownable.MSTests.csproj package Neo.Debugger.Core
+      dotnet restore TakeWing.Neo.Multiownable.MSTests\TakeWing.Neo.Multiownable.MSTests.csproj
     displayName: 'Core'
 
   - task: NuGetCommand@2
