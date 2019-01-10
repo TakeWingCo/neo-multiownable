@@ -82,6 +82,7 @@ jobs:
       testSelector: 'testAssemblies'
       testAssemblyVer2: TakeWing.Neo.Multiownable.MSTests\bin\Debug\netcoreapp2.1\TakeWing.Neo.Multiownable.MSTests.dll
       codeCoverageEnabled: True
+      otherConsoleOptions: /logger:TfsPublisher;
     displayName: 'Run Multiownable.Tests'
 
   # Build tests
