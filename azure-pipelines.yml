@@ -23,13 +23,25 @@ jobs:
     inputs:
       command: custom
       arguments: install Neo.Debugger.Core -OutputDirectory packages
-    displayName: 'Install Neo.Debugger.Core'
+    displayName: 'Install Neo.Debugger.Core 1'
+
+  - task: NuGetCommand@2
+    inputs:
+      command: custom
+      arguments: install Neo.Debugger.Core -OutputDirectory "C:\Users\VssAdministrator\.nuget\packages\"
+    displayName: 'Install Neo.Debugger.Core 2'
 
   - task: NuGetCommand@2
     inputs:
       command: custom
       arguments: install Neo.Emulator -OutputDirectory packages -Source "Microsoft Visual Studio Offline Packages"
-    displayName: 'Install Neo.Emulator'
+    displayName: 'Install Neo.Emulator 1'
+
+  - task: NuGetCommand@2
+    inputs:
+      command: custom
+      arguments: install Neo.Emulator -OutputDirectory "C:\Users\VssAdministrator\.nuget\packages\" -Source "Microsoft Visual Studio Offline Packages"
+    displayName: 'Install Neo.Emulator 2'
 
   # Restore all the other packages
   - task: NuGetCommand@2
