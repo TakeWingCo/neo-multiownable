@@ -59,6 +59,9 @@ jobs:
     displayName: 'Build Multiownable.Tests'
 
   # Run all tests
-  - script: |
-      dotnet test TakeWing.Neo.Multiownable.Tests\TakeWing.Neo.Multiownable.Tests.csproj
+  - task: VSTest@2
+    inputs:
+      testSelector: 'testAssemblies'
+      testAssemblyVer2: TakeWing.Neo.Multiownable.Tests\bin\Debug\TakeWing.Neo.Multiownable.Tests.dll
+      codeCoverageEnabled: True
     displayName: 'Run Multiownable.Tests'
