@@ -29,15 +29,20 @@ jobs:
     displayName: 'Install Neo.Emulator'
 
   # Restore all the other packages
+  - task: NuGetCommand@2
+    inputs:
+      command: custom
+      arguments: restore build neo-debugger-tools\NEO-Compiler\NEO-Compiler.csproj
+
   - script: |
       dotnet restore TakeWing.Neo.Multiownable.MSTests\TakeWing.Neo.Multiownable.MSTests.csproj
     displayName: 'Restore Packages'
 
   # Build NeoCompiler and copy it to Debug directory to use it
-  #- script: |
-  #    dotnet build neo-debugger-tools\NEO-Compiler\NEO-Compiler.csproj
-  #    xcopy neo-debugger-tools\NEO-Compiler\bin\Debug\* TakeWing.Neo.Multiownable.SmartContractsForTests\bin\Debug\
-  #  displayName: 'Build and copy NeoCompiler'
+  - script: |
+      dotnet build neo-debugger-tools\NEO-Compiler\NEO-Compiler.csproj
+      xcopy neo-debugger-tools\NEO-Compiler\bin\Debug\* TakeWing.Neo.Multiownable.SmartContractsForTests\bin\Debug\
+    displayName: 'Build and copy NeoCompiler'
 
   # Build Multiownable project
   - task: MsBuild@1
