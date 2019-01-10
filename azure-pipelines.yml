@@ -75,7 +75,7 @@ jobs:
     displayName: 'Build Multiownable.Tests'
 
   # Run all tests
-  - script: dotnet test TakeWing.Neo.Multiownable.MSTests\TakeWing.Neo.Multiownable.MSTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
+  - script: dotnet test TakeWing.Neo.Multiownable.MSTests\TakeWing.Neo.Multiownable.MSTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura --filter Name=GetAllOwners_KnownOwners_OwnersCorrect
     continueOnError: True
     displayName: 'Run tests'
 
