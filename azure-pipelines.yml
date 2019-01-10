@@ -44,7 +44,7 @@ jobs:
   - task: NuGetCommand@2
     inputs:
       command: custom
-      arguments: TakeWing.Neo.Multiownable.SmartContractsForTests\TakeWing.Neo.Multiownable.SmartContractsForTests.csproj -PackagesDirectory packages
+      arguments: restore TakeWing.Neo.Multiownable.SmartContractsForTests\TakeWing.Neo.Multiownable.SmartContractsForTests.csproj -PackagesDirectory packages
     displayName: 'Restore Multiownable.SmartContractsForTests packages'
 
   - script: |
