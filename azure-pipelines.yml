@@ -30,12 +30,11 @@ jobs:
 
   # Restore all the other packages
   - script: |
-      dotnet restore TakeWing.Neo.Multiownable.MSTests\TakeWing.Neo.Multiownable.MSTests.csproj
+      dotnet restore --force neo-debugger-tools\NEO-Compiler\NEO-Compiler.csproj
+      dotnet restore --force TakeWing.Neo.Multiownable\TakeWing.Neo.Multiownable.csproj
+      dotnet restore --force TakeWing.Neo.Multiownable.SmartContractsForTests\TakeWing.Neo.Multiownable.SmartContractsForTests.csproj
+      dotnet restore --force TakeWing.Neo.Multiownable.MSTests\TakeWing.Neo.Multiownable.MSTests.csproj
     displayName: 'Restore Packages'
-
-  - task: NuGetCommand@2
-    inputs:
-      command: restore
 
   # Build NeoCompiler and copy it to Debug directory to use it
   - script: |
