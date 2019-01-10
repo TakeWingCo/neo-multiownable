@@ -1,14 +1,14 @@
 jobs: 
-- job: windows
+- job: Windows
 
   pool:
     vmImage: 'vs2017-win2016'
 
   steps:
-  # Download NeoCompiler
+  # Download NEO-Compiler
   - script: |
       git clone https://github.com/CityOfZion/neo-debugger-tools
-    displayName: 'Download NeoCompiler'
+    displayName: 'Download NEO-Compiler'
 
   # Copy packages to offline source and install them
   - script: |
@@ -32,6 +32,12 @@ jobs:
   - task: NuGetCommand@2
     inputs:
       command: custom
+      arguments: restore neo-debugger-tools\NEO-Compiler\NEO-Compiler.csproj -PackagesDirectory packages
+    displayName: 'Restore NEO-Compiler packages'
+
+  - task: NuGetCommand@2
+    inputs:
+      command: custom
       arguments: restore TakeWing.Neo.Multiownable\TakeWing.Neo.Multiownable.csproj -PackagesDirectory packages
     displayName: 'Restore Multiownable packages'
 
@@ -45,11 +51,11 @@ jobs:
       dotnet restore TakeWing.Neo.Multiownable.MSTests\TakeWing.Neo.Multiownable.MSTests.csproj
     displayName: 'Restore Multiownable.MSTests packages'
 
-  # Build NeoCompiler and copy it to Debug directory to use it
-  #- script: |
-  #    dotnet build neo-debugger-tools\NEO-Compiler\NEO-Compiler.csproj
-  #    xcopy neo-debugger-tools\NEO-Compiler\bin\Debug\* TakeWing.Neo.Multiownable.SmartContractsForTests\bin\Debug\
-  #  displayName: 'Build and copy NeoCompiler'
+  # Build NEO-Compiler and copy it to Debug directory to use it
+  - script: |
+      dotnet build neo-debugger-tools\NEO-Compiler\NEO-Compiler.csproj
+      xcopy neo-debugger-tools\NEO-Compiler\bin\Debug\* TakeWing.Neo.Multiownable.SmartContractsForTests\bin\Debug\
+    displayName: 'Build and copy NEO-Compiler'
 
   # Build Multiownable project
   - task: MsBuild@1
