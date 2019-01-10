@@ -76,6 +76,7 @@ jobs:
 
   # Run all tests
   - script: dotnet test TakeWing.Neo.Multiownable.MSTests\TakeWing.Neo.Multiownable.MSTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
+    continueOnError: True
     displayName: 'Run tests'
 
   - task: PublishCodeCoverageResults@1
