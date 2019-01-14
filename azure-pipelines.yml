@@ -31,24 +31,7 @@ jobs:
   # Restore all the other packages
   - task: NuGetCommand@2
     inputs:
-      command: custom
-      arguments: restore neo-debugger-tools\neo-dev-tools.sln
-    displayName: 'Restore NEO-Compiler packages'
-
-  - task: NuGetCommand@2
-    inputs:
-      command: custom
-      arguments: restore TakeWing.Neo.Multiownable\TakeWing.Neo.Multiownable.csproj -PackagesDirectory packages
-    displayName: 'Restore Multiownable packages'
-
-  - task: NuGetCommand@2
-    inputs:
-      command: custom
-      arguments: restore TakeWing.Neo.Multiownable.SmartContractsForTests\TakeWing.Neo.Multiownable.SmartContractsForTests.csproj -PackagesDirectory packages
-    displayName: 'Restore Multiownable.SmartContractsForTests packages'
-
-  - script: dotnet restore TakeWing.Neo.Multiownable.MSTests\TakeWing.Neo.Multiownable.MSTests.csproj
-    displayName: 'Restore Multiownable.MSTests packages'
+      command: restore
 
   # Build NEO-Compiler and copy it to Debug directory to use it
   - script: |
@@ -71,30 +54,12 @@ jobs:
   # Build tests
   - task: MsBuild@1
     inputs:
-      solution: TakeWing.Neo.Multiownable.MSTests\TakeWing.Neo.Multiownable.MSTests.csproj
+      solution: TakeWing.Neo.Multiownable.Tests\TakeWing.Neo.Multiownable.Tests.csproj
     displayName: 'Build Multiownable.Tests'
 
   # Run all tests
-  - script: dotnet test TakeWing.Neo.Multiownable.MSTests\TakeWing.Neo.Multiownable.MSTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura --filter Name=GetAllOwners_KnownOwners_OwnersCorrect
-    continueOnError: True
-    displayName: 'Run tests'
-
-  - task: PublishCodeCoverageResults@1
+  - task: VSTest@2
     inputs:
-      codeCoverageTool: 'cobertura'
-      summaryFileLocation: '**/coverage.cobertura.xml'
-    displayName: 'Publish coverage results'
-
-  # Build tests
-  #- task: MsBuild@1
-  #  inputs:
-  #    solution: TakeWing.Neo.Multiownable.Tests\TakeWing.Neo.Multiownable.Tests.csproj
-  #  displayName: 'Build Multiownable.Tests'
-
-  # Run all tests
-  #- task: VSTest@2
-  #  inputs:
-  #    testSelector: 'testAssemblies'
-  #    testAssemblyVer2: TakeWing.Neo.Multiownable.Tests\bin\Debug\TakeWing.Neo.Multiownable.Tests.dll
-  #    codeCoverageEnabled: True
-  #  displayName: 'Run Multiownable.Tests'
+      testSelector: 'testAssemblies'
+      testAssemblyVer2: TakeWing.Neo.Multiownable.Tests\bin\Debug\TakeWing.Neo.Multiownable.Tests.dll
+    displayName: 'Run Multiownable.Tests'
