@@ -1,6 +1,6 @@
 # neo-multiownable
 [![Build Status](https://dev.azure.com/soloway2010/TakeWing.Neo.Multiownable/_apis/build/status/soloway2010.neo-multiownable?branchName=develop)](https://dev.azure.com/soloway2010/TakeWing.Neo.Multiownable/_build/latest?definitionId=1?branchName=develop)
-[![Tests coverage](https://img.shields.io/azure-devops/tests/soloway2010/TakeWing.Neo.Multiownable/1.svg)](https://img.shields.io/azure-devops/tests/soloway2010/TakeWing.Neo.Multiownable/1.svg)
+[![Tests coverage](https://img.shields.io/azure-devops/tests/soloway2010/TakeWing.Neo.Multiownable/1.svg)](https://dev.azure.com/soloway2010/TakeWing.Neo.Multiownable/_build/latest?definitionId=1?branchName=develop)
 
 Multiownable library for NEO Smart Contracts
 
