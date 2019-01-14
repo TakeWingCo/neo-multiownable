@@ -278,6 +278,15 @@ namespace TakeWing.Neo.Multiownable.Tests
             // Increase time.
             Debugger.Emulator.timestamp += 2000;
 
+            // Expired vote.
+            Runtime.invokerKeys = keyPairs[0];
+            args = $"\"{operation}\",[\"0x{keyPairs[0].CompressedPublicKey.ToHexString()}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
+            inputs = DebuggerUtils.GetArgsListAsNode(args);
+
+            script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
+            Debugger.Emulator.Reset(script, Debugger.ABI, "Main");
+            Debugger.Emulator.Run();
+
             // First vote.
             Runtime.invokerKeys = keyPairs[0];
             args = $"\"{operation}\",[\"0x{keyPairs[0].CompressedPublicKey.ToHexString()}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";

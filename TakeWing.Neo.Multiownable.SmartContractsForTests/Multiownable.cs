@@ -163,12 +163,12 @@ namespace TakeWing.Neo.Multiownable
 
 			// Convert and concat to one array all args.
 			byte[] mainArray = functionSignature.AsByteArray();
-			mainArray.Concat(((BigInteger)ownersCount).AsByteArray());
-			mainArray.Concat(((BigInteger)timeout).AsByteArray());
-			mainArray.Concat(((BigInteger)GetGenerationOfOwners()).AsByteArray());
+			mainArray = mainArray.Concat(((BigInteger)ownersCount).AsByteArray());
+            mainArray = mainArray.Concat(((BigInteger)timeout).AsByteArray());
+            mainArray = mainArray.Concat(((BigInteger)GetGenerationOfOwners()).AsByteArray());
 
 			for (int i = 0; i < args.Length; i++)
-				mainArray.Concat((byte[])args[0]);
+                mainArray = mainArray.Concat((byte[])args[0]);
 
 			// Get Sha256 hash from array.
 			byte[] shaMainArray = Sha256(mainArray);
@@ -198,8 +198,14 @@ namespace TakeWing.Neo.Multiownable
 			UInt32 firstCallDate = (UInt32)Storage.Get(Storage.CurrentContext, shaMainArray.Concat("FirstCallDate".AsByteArray())).AsBigInteger();
 			UInt32 overdueDate = firstCallDate + timeout;
 
-			if (Runtime.Time > overdueDate)
-				return false;
+            if (Runtime.Time > overdueDate)
+            {
+                Storage.Delete(Storage.CurrentContext, shaMainArray.Concat("TotalVoted".AsByteArray()));
+                Storage.Delete(Storage.CurrentContext, shaMainArray.Concat("VotersMask".AsByteArray()));
+                Storage.Delete(Storage.CurrentContext, shaMainArray.Concat("FirstCallDate".AsByteArray()));
+
+                return false;
+            }
 
 			// Check voters and return true or do vote.
 			if (votersMask[ownerIndex] != 1)
