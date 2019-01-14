@@ -47,8 +47,7 @@ jobs:
       arguments: restore TakeWing.Neo.Multiownable.SmartContractsForTests\TakeWing.Neo.Multiownable.SmartContractsForTests.csproj -PackagesDirectory packages
     displayName: 'Restore Multiownable.SmartContractsForTests packages'
 
-  - script: |
-      dotnet restore TakeWing.Neo.Multiownable.MSTests\TakeWing.Neo.Multiownable.MSTests.csproj
+  - script: dotnet restore TakeWing.Neo.Multiownable.MSTests\TakeWing.Neo.Multiownable.MSTests.csproj
     displayName: 'Restore Multiownable.MSTests packages'
 
   # Build NEO-Compiler and copy it to Debug directory to use it
@@ -76,14 +75,15 @@ jobs:
     displayName: 'Build Multiownable.Tests'
 
   # Run all tests
-  - task: VSTest@2
+  - script: dotnet test TakeWing.Neo.Multiownable.MSTests\TakeWing.Neo.Multiownable.MSTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura --filter Name=GetAllOwners_KnownOwners_OwnersCorrect
     continueOnError: True
+    displayName: 'Run tests'
+
+  - task: PublishCodeCoverageResults@1
     inputs:
-      testSelector: 'testAssemblies'
-      testAssemblyVer2: TakeWing.Neo.Multiownable.MSTests\bin\Debug\netcoreapp2.1\TakeWing.Neo.Multiownable.MSTests.dll
-      codeCoverageEnabled: True
-      otherConsoleOptions: /logger:console;verbosity="normal"
-    displayName: 'Run Multiownable.Tests'
+      codeCoverageTool: 'cobertura'
+      summaryFileLocation: '**/coverage.cobertura.xml'
+    displayName: 'Publish coverage results'
 
   # Build tests
   #- task: MsBuild@1
