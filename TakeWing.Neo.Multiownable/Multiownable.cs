@@ -164,11 +164,11 @@ namespace TakeWing.Neo.Multiownable
 			// Convert and concat to one array all args.
 			byte[] mainArray = functionSignature.AsByteArray();
 			mainArray.Concat(((BigInteger)ownersCount).AsByteArray());
-			mainArray.Concat(((BigInteger)timeout).AsByteArray());
-			mainArray.Concat(((BigInteger)GetGenerationOfOwners()).AsByteArray());
+            mainArray.Concat(((BigInteger)timeout).AsByteArray());
+            mainArray.Concat(((BigInteger)GetGenerationOfOwners()).AsByteArray());
 
 			for (int i = 0; i < args.Length; i++)
-				mainArray.Concat((byte[])args[0]);
+                mainArray.Concat((byte[])args[0]);
 
 			// Get Sha256 hash from array.
 			byte[] shaMainArray = Sha256(mainArray);
@@ -198,8 +198,8 @@ namespace TakeWing.Neo.Multiownable
 			UInt32 firstCallDate = (UInt32)Storage.Get(Storage.CurrentContext, shaMainArray.Concat("FirstCallDate".AsByteArray())).AsBigInteger();
 			UInt32 overdueDate = firstCallDate + timeout;
 
-			if (Runtime.Time > overdueDate)
-				return false;
+            if (Runtime.Time > overdueDate)
+                return false;
 
 			// Check voters and return true or do vote.
 			if (votersMask[ownerIndex] != 1)
@@ -250,5 +250,109 @@ namespace TakeWing.Neo.Multiownable
 			else
 				return false;
 		}
-	}
+
+        /// <summary>
+		/// Cancel vote for the given voting.
+		/// </summary>
+		/// <param name="initiator"></param>
+		/// <param name="functionSignature"></param>
+		/// <param name="ownersCount"></param>
+		/// <param name="timeout"></param>
+		/// <param name="args"></param>
+		/// <returns></returns>
+		public static Boolean CancelVote(Byte[] initiator, String functionSignature, Byte ownersCount, UInt32 timeout,
+            params Object[] args)
+        {
+            // If initiator not Invoker or owner, return false.
+            if (!IsOwner(initiator) || !Runtime.CheckWitness(initiator))
+                return false;
+
+            // Convert and concat to one array all args.
+            byte[] mainArray = functionSignature.AsByteArray();
+            mainArray = mainArray.Concat(((BigInteger)ownersCount).AsByteArray());
+            mainArray = mainArray.Concat(((BigInteger)timeout).AsByteArray());
+            mainArray = mainArray.Concat(((BigInteger)GetGenerationOfOwners()).AsByteArray());
+
+            for (int i = 0; i < args.Length; i++)
+                mainArray = mainArray.Concat((byte[])args[0]);
+
+            // Get Sha256 hash from array.
+            byte[] shaMainArray = Sha256(mainArray);
+
+            // Get voters mask.
+            Byte totalVoted = Storage.Get(Storage.CurrentContext, shaMainArray.Concat("TotalVoted".AsByteArray()))[0];
+            Byte[] votersMask = Storage.Get(Storage.CurrentContext, shaMainArray.Concat("VotersMask".AsByteArray()));
+            Byte ownerIndex = GetIndexByOwner(initiator);
+
+            // If voting does not exist return false.
+            if(totalVoted == 0)
+            {
+                Runtime.Notify("Voting does not exist");
+
+                return false;
+            }
+
+            // Check timeout and return false, if time overdue.
+            UInt32 firstCallDate = (UInt32)Storage.Get(Storage.CurrentContext, shaMainArray.Concat("FirstCallDate".AsByteArray())).AsBigInteger();
+            UInt32 overdueDate = firstCallDate + timeout;
+
+            if (Runtime.Time > overdueDate)
+            {
+                Storage.Delete(Storage.CurrentContext, shaMainArray.Concat("TotalVoted".AsByteArray()));
+                Storage.Delete(Storage.CurrentContext, shaMainArray.Concat("VotersMask".AsByteArray()));
+                Storage.Delete(Storage.CurrentContext, shaMainArray.Concat("FirstCallDate".AsByteArray()));
+
+                return false;
+            }
+
+            // Check vote and cancel it.
+            if (votersMask[ownerIndex] != 0)
+            {
+                totalVoted = (byte)(totalVoted - 1);
+
+                byte[] newVotersMask = new byte[] { };
+
+                for (int i = 0; i < votersMask.Length; i++)
+                {
+                    if (ownerIndex == i)
+                    {
+                        newVotersMask = newVotersMask.Concat(new byte[1] { 0 });
+                    }
+                    else
+                    {
+                        if (votersMask[i] == 1)
+                        {
+                            newVotersMask = newVotersMask.Concat(new byte[1] { 1 });
+                        }
+                        else
+                        {
+                            newVotersMask = newVotersMask.Concat(new byte[1] { 0 });
+                        }
+                    }
+
+                    Runtime.Notify(newVotersMask[i]);
+                }
+
+                Storage.Put(Storage.CurrentContext, shaMainArray.Concat("TotalVoted".AsByteArray()), totalVoted);
+                Storage.Put(Storage.CurrentContext, shaMainArray.Concat("VotersMask".AsByteArray()), newVotersMask);
+
+                Runtime.Notify("Vote canceled", initiator);
+            }
+            else
+            {
+                Runtime.Notify("This initiator already canceled vote", initiator);
+
+                return false;
+            }
+
+            if (totalVoted == 0)
+            {
+                Storage.Delete(Storage.CurrentContext, shaMainArray.Concat("TotalVoted".AsByteArray()));
+                Storage.Delete(Storage.CurrentContext, shaMainArray.Concat("VotersMask".AsByteArray()));
+                Storage.Delete(Storage.CurrentContext, shaMainArray.Concat("FirstCallDate".AsByteArray()));
+            }
+
+            return true;
+        }
+    }
 }
