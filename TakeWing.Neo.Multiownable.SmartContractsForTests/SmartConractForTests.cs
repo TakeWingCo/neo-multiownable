@@ -48,6 +48,30 @@ namespace TakeWing.Neo.Multiownable.SmartContractsForTests
 					return false;
 				}
 			}
+            else if (operation == "CancelCall")
+            {
+                byte[] initiator = (byte[])args[0];
+                string functionSignature = ((byte[])args[1]).AsString();
+                Byte ownersCount = (byte)args[2];
+                UInt32 timeout = (UInt32)((byte[])args[3]).AsBigInteger();
+                int argsCount = (int)((byte[])args[4]).AsBigInteger();
+
+                object[] argsForMultiownable = new object[argsCount];
+                for (int i = 0, j = 5; i < argsCount; i++, j++)
+                    argsForMultiownable[i] = (byte[])args[j];
+
+                if (Multiownable.CancelVote(initiator, functionSignature, ownersCount, timeout,
+                    argsForMultiownable))
+                {
+                    Runtime.Notify("Cancellation successful.");
+                    return true;
+                }
+                else
+                {
+                    Runtime.Notify("Cancellation failed.");
+                    return false;
+                }
+            }
 			else if (operation == "GetNumberOfOwners")
 			{
 				return Multiownable.GetNumberOfOwners();
