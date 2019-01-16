@@ -369,6 +369,186 @@ namespace TakeWing.Neo.Multiownable.Tests
         }
 
         [TestMethod]
+        public void CancelVote_OneCancellation_VotingUnsuccessful()
+        {
+            TransferOwnership_ZeroGeneration_TransferSuccessful();
+
+            var operation = "Call";
+
+            // First vote.
+            var args = $"\"{operation}\",[\"0x{keyPairs[0].CompressedPublicKey.ToHexString()}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
+            var inputs = DebuggerUtils.GetArgsListAsNode(args);
+
+            var script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
+            Debugger.Emulator.Reset(script, Debugger.ABI, "Main");
+            Debugger.Emulator.Run();
+
+            // Second vote.
+            Runtime.invokerKeys = keyPairs[1];
+            args = $"\"{operation}\",[\"0x{keyPairs[1].CompressedPublicKey.ToHexString()}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
+            inputs = DebuggerUtils.GetArgsListAsNode(args);
+
+            script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
+            Debugger.Emulator.Reset(script, Debugger.ABI, "Main");
+            Debugger.Emulator.Run();
+
+            // Cancel first vote.
+            operation = "CancelCall";
+
+            Runtime.invokerKeys = keyPairs[0];
+            args = $"\"{operation}\",[\"0x{keyPairs[0].CompressedPublicKey.ToHexString()}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
+            inputs = DebuggerUtils.GetArgsListAsNode(args);
+
+            script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
+            Debugger.Emulator.Reset(script, Debugger.ABI, "Main");
+            Debugger.Emulator.Run();
+
+            //Third vote.
+            operation = "Call";
+
+            Runtime.invokerKeys = keyPairs[2];
+            args = $"\"{operation}\",[\"0x{keyPairs[2].CompressedPublicKey.ToHexString()}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
+            inputs = DebuggerUtils.GetArgsListAsNode(args);
+
+            script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
+            Debugger.Emulator.Reset(script, Debugger.ABI, "Main");
+            Debugger.Emulator.Run();
+
+            var result = Debugger.Emulator.GetOutput();
+
+            // Check if voting is finished unsuccessfully after one cancellation.
+            Assert.IsFalse(result.GetBoolean(), "Voting should have not been successful");
+        }
+
+        [TestMethod]
+        public void CancelVote_CancellationAfterTimeout_CancellationUnsuccessful()
+        {
+            TransferOwnership_ZeroGeneration_TransferSuccessful();
+
+            var operation = "Call";
+
+            // First vote.
+            var args = $"\"{operation}\",[\"0x{keyPairs[0].CompressedPublicKey.ToHexString()}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
+            var inputs = DebuggerUtils.GetArgsListAsNode(args);
+
+            var script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
+            Debugger.Emulator.Reset(script, Debugger.ABI, "Main");
+            Debugger.Emulator.Run();
+
+            // Second vote.
+            Runtime.invokerKeys = keyPairs[1];
+            args = $"\"{operation}\",[\"0x{keyPairs[1].CompressedPublicKey.ToHexString()}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
+            inputs = DebuggerUtils.GetArgsListAsNode(args);
+
+            script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
+            Debugger.Emulator.Reset(script, Debugger.ABI, "Main");
+            Debugger.Emulator.Run();
+
+            // Increase time.
+            Debugger.Emulator.timestamp += 2000;
+
+            // Cancel first vote.
+            operation = "CancelCall";
+
+            Runtime.invokerKeys = keyPairs[0];
+            args = $"\"{operation}\",[\"0x{keyPairs[0].CompressedPublicKey.ToHexString()}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
+            inputs = DebuggerUtils.GetArgsListAsNode(args);
+
+            script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
+            Debugger.Emulator.Reset(script, Debugger.ABI, "Main");
+            Debugger.Emulator.Run();
+
+            var result = Debugger.Emulator.GetOutput();
+
+            // Check if cancellation is unsuccessful after timeout.
+            Assert.IsFalse(result.GetBoolean(), "Cancellation should have failed");
+        }
+
+        [TestMethod]
+        public void CancelVote_CancellationInAnotherVoting_CancellationUnsuccessful()
+        {
+            TransferOwnership_ZeroGeneration_TransferSuccessful();
+
+            var operation = "Call";
+
+            // First vote.
+            var args = $"\"{operation}\",[\"0x{keyPairs[0].CompressedPublicKey.ToHexString()}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
+            var inputs = DebuggerUtils.GetArgsListAsNode(args);
+
+            var script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
+            Debugger.Emulator.Reset(script, Debugger.ABI, "Main");
+            Debugger.Emulator.Run();
+
+            // Second vote.
+            Runtime.invokerKeys = keyPairs[1];
+            args = $"\"{operation}\",[\"0x{keyPairs[1].CompressedPublicKey.ToHexString()}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
+            inputs = DebuggerUtils.GetArgsListAsNode(args);
+
+            script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
+            Debugger.Emulator.Reset(script, Debugger.ABI, "Main");
+            Debugger.Emulator.Run();
+
+            // Cancel first vote.
+            operation = "CancelCall";
+
+            Runtime.invokerKeys = keyPairs[0];
+            args = $"\"{operation}\",[\"0x{keyPairs[0].CompressedPublicKey.ToHexString()}\", \"Boolean TransferOwnership(Byte[])\", 3, 1000, 0]";
+            inputs = DebuggerUtils.GetArgsListAsNode(args);
+
+            script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
+            Debugger.Emulator.Reset(script, Debugger.ABI, "Main");
+            Debugger.Emulator.Run();
+
+            var result = Debugger.Emulator.GetOutput();
+
+            // Check if cancellation is unsuccessful in another voting.
+            Assert.IsFalse(result.GetBoolean(), "Cancellation should have failed");
+        }
+
+        [TestMethod]
+        public void CancelVote_CancellationToZero_VotingUnsuccessful()
+        {
+            TransferOwnership_ZeroGeneration_TransferSuccessful();
+
+            var operation = "Call";
+
+            // First vote.
+            var args = $"\"{operation}\",[\"0x{keyPairs[0].CompressedPublicKey.ToHexString()}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
+            var inputs = DebuggerUtils.GetArgsListAsNode(args);
+
+            var script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
+            Debugger.Emulator.Reset(script, Debugger.ABI, "Main");
+            Debugger.Emulator.Run();
+
+            // Cancel first vote.
+            operation = "CancelCall";
+
+            Runtime.invokerKeys = keyPairs[0];
+            args = $"\"{operation}\",[\"0x{keyPairs[0].CompressedPublicKey.ToHexString()}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
+            inputs = DebuggerUtils.GetArgsListAsNode(args);
+
+            script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
+            Debugger.Emulator.Reset(script, Debugger.ABI, "Main");
+            Debugger.Emulator.Run();
+
+            // Second vote.
+            operation = "Call";
+
+            Runtime.invokerKeys = keyPairs[1];
+            args = $"\"{operation}\",[\"0x{keyPairs[1].CompressedPublicKey.ToHexString()}\", \"Boolean TransferOwnership(Byte[], Byte[][])\", 3, 1000, 0]";
+            inputs = DebuggerUtils.GetArgsListAsNode(args);
+
+            script = Debugger.Emulator.GenerateLoaderScriptFromInputs(inputs, Debugger.ABI);
+            Debugger.Emulator.Reset(script, Debugger.ABI, "Main");
+            Debugger.Emulator.Run();
+
+            var result = Debugger.Emulator.GetOutput();
+
+            // Check if voting is finished unsuccessfully after all votes canceled.
+            Assert.IsFalse(result.GetBoolean(), "Voting should have been unsuccessful");
+        }
+
+        [TestMethod]
         public void GetIndexByOwner_OwnerExists_IndexCorrect()
         {
             TransferOwnership_ZeroGeneration_TransferSuccessful();
