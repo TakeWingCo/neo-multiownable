@@ -11,6 +11,9 @@ namespace TakeWing.Neo.Multiownable.Tests
     [TestClass]
     public class Multiownable
     {
+        /// <summary>
+        /// Information to unit test
+        /// </summary>
         public TestContext TestContext
         {
             get
@@ -24,16 +27,27 @@ namespace TakeWing.Neo.Multiownable.Tests
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         private DebugManager Debugger;
         private TestContext TestContextInstance;
         
         private static KeyPair[] keyPairs;
 
+        /// <summary>
+        /// Write message to TestContext
+        /// </summary>
+        /// <param name="msg">Message</param>
         private void OnLogMessage(System.String msg)
         {
             TestContext.WriteLine(msg);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="testContext">Not used</param>
         [ClassInitialize]
         public static void Setup(TestContext testContext)
         {
@@ -45,6 +59,9 @@ namespace TakeWing.Neo.Multiownable.Tests
             keyPairs[4] = DebuggerUtils.GetKeyFromString("132a7996a6183221d21a767b77fe3afc331e5fe553d28a633364ae951a1fa841");
         }
 
+        /// <summary>
+        /// Load test contract to Debugger
+        /// </summary>
         [TestInitialize]
         public void TestSetup()
         {
