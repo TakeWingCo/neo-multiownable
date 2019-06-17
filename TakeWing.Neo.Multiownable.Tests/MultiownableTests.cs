@@ -28,7 +28,7 @@ namespace TakeWing.Neo.Multiownable.Tests
         }
 
         /// <summary>
-        /// 
+        /// Debugger for tests
         /// </summary>
         private DebugManager Debugger;
         private TestContext TestContextInstance;
@@ -45,7 +45,7 @@ namespace TakeWing.Neo.Multiownable.Tests
         }
 
         /// <summary>
-        /// 
+        /// Sets 5 test KeyPairs
         /// </summary>
         /// <param name="testContext">Not used</param>
         [ClassInitialize]
@@ -61,6 +61,7 @@ namespace TakeWing.Neo.Multiownable.Tests
 
         /// <summary>
         /// Load test contract to Debugger
+        /// Choice KeyPair[0] to use
         /// </summary>
         [TestInitialize]
         public void TestSetup()
@@ -72,6 +73,9 @@ namespace TakeWing.Neo.Multiownable.Tests
             Runtime.OnLogMessage = OnLogMessage;
         }
 
+        /// <summary>
+        /// Test of successful execution of TransferOwnership for "zero generation"
+        /// </summary>
         [TestMethod]
         public void TransferOwnership_ZeroGeneration_TransferSuccessful()
         {
@@ -94,6 +98,14 @@ namespace TakeWing.Neo.Multiownable.Tests
             Assert.IsTrue(result.GetBoolean(), "Transfer should have been successful");
         }
 
+        /// <summary>
+        /// Test of successful execution of TransferOwnership for "non-zero generation" and check if correct owner:
+        ///     Run TransferOwnership_ZeroGeneration_TransferSuccessful()
+        ///     Running TransferOwnership in turn for 0, 1 and 2 KeyPairs as an initiator and KeyPairs[2] as owner
+        ///     Check if correct number of owners.
+        ///     Check if correct owner.
+        ///     Check if transferring is successful.
+        /// </summary>
         [TestMethod]
         public void TransferOwnership_NonZeroGeneration_TransferSuccessful()
         {
@@ -157,6 +169,9 @@ namespace TakeWing.Neo.Multiownable.Tests
             Assert.IsTrue(result.GetBoolean(), "Transfer should have been successful");
         }
 
+        /// <summary>
+        /// Test for successful voting with enough votes (3 votes out of 5)
+        /// </summary>
         [TestMethod]
         public void Voting_EnoughVotes_VotingSuccessful()
         {
@@ -196,6 +211,9 @@ namespace TakeWing.Neo.Multiownable.Tests
             Assert.IsTrue(result.GetBoolean(), "Voting should have been successful");
         }
 
+        /// <summary>
+        /// Test for unsuccessful voting with not enough votes (2 votes out of 5)
+        /// </summary>
         [TestMethod]
         public void Voting_NotEnoughVotes_VotingUnsuccessful()
         {
@@ -226,6 +244,10 @@ namespace TakeWing.Neo.Multiownable.Tests
             Assert.IsFalse(result.GetBoolean(), "Voting should not have been successful");
         }
 
+        /// <summary>
+        /// Test for unsuccessful voting with not enough votes until Timeout is over
+        /// (2 owners managed to vote and 1 did not have time out of 5 owners)
+        /// </summary>
         [TestMethod]
         public void Voting_TimeoutPassed_VotingUnsuccessful()
         {
