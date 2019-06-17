@@ -291,7 +291,7 @@ namespace TakeWing.Neo.Multiownable.Tests
         }
 
         /// <summary>
-        /// ???
+        /// Successful voting at the end of the timeout and after that a sufficient number of votes
         /// </summary>
         [TestMethod]
         public void Voting_TimeoutPassedNewVotingStarted_VotingSuccessful()
@@ -607,7 +607,7 @@ namespace TakeWing.Neo.Multiownable.Tests
         }
 
         /// <summary>
-        /// For GetIndexByOwner request with owner exists, returns index is correct.
+        /// For GetIndexByOwner request with owner exists, returns index is correct
         /// </summary>
         [TestMethod]
         public void GetIndexByOwner_OwnerExists_IndexCorrect()
@@ -698,6 +698,9 @@ namespace TakeWing.Neo.Multiownable.Tests
             Assert.AreEqual("", result.GetString(), "Owner should have been null");
         }
 
+        /// <summary>
+        /// For IsOwner request with owner exists, returns true
+        /// </summary>
         [TestMethod]
         public void IsOwnerTest_PublicKeyOwner_Owner()
         {
@@ -718,6 +721,9 @@ namespace TakeWing.Neo.Multiownable.Tests
             Assert.IsTrue(result.GetBoolean(), "Public key should have been considered owner's");
         }
 
+        /// <summary>
+        /// For IsOwner request with owner non-exists, returns false
+        /// </summary>
         [TestMethod]
         public void IsOwnerTest_PublicKeyNotOwner_NotOwner()
         {
@@ -738,6 +744,9 @@ namespace TakeWing.Neo.Multiownable.Tests
             Assert.IsFalse(result.GetBoolean(), "Public key should not have been considered owner's");
         }
 
+        /// <summary>
+        /// GetAllOwners request correctly returns all owners
+        /// </summary>
         [TestMethod]
         public void GetAllOwners_KnownOwners_OwnersCorrect()
         {
@@ -759,6 +768,9 @@ namespace TakeWing.Neo.Multiownable.Tests
                 CollectionAssert.AreEqual(keyPairs[i].CompressedPublicKey, result[i].GetByteArray(), "Owner should have been correct");
         }
 
+        /// <summary>
+        /// GetGenerationOfOwners request correctly returns generation (= 1) for zero-generation.
+        /// </summary>
         [TestMethod]
         public void GetGenerationOfOwners_FirstGeneration_GenerationCorrect()
         {
@@ -779,6 +791,9 @@ namespace TakeWing.Neo.Multiownable.Tests
             Assert.AreEqual(BigInteger.Parse("1"), result.GetBigInteger(), "Generation of owners should have been 1");
         }
 
+        /// <summary>
+        /// GetNumberOfOwners request correctly returns the number of owners (=5)
+        /// </summary>
         [TestMethod]
         public void GetNumberOfOwners_KnownNumberOfOwners_NumberOfOwnersCorrect()
         {
