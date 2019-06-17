@@ -74,7 +74,7 @@ namespace TakeWing.Neo.Multiownable.Tests
         }
 
         /// <summary>
-        /// Test of successful execution of TransferOwnership for "zero generation"
+        /// Successful execution of TransferOwnership for "zero generation"
         /// </summary>
         [TestMethod]
         public void TransferOwnership_ZeroGeneration_TransferSuccessful()
@@ -99,7 +99,7 @@ namespace TakeWing.Neo.Multiownable.Tests
         }
 
         /// <summary>
-        /// Test of successful execution of TransferOwnership for "non-zero generation" and check if correct owner:
+        /// Successful execution of TransferOwnership for "non-zero generation" and check if correct owner:
         ///     Run TransferOwnership_ZeroGeneration_TransferSuccessful()
         ///     Running TransferOwnership in turn for 0, 1 and 2 KeyPairs as an initiator and KeyPairs[2] as owner
         ///     Check if correct number of owners.
@@ -170,7 +170,7 @@ namespace TakeWing.Neo.Multiownable.Tests
         }
 
         /// <summary>
-        /// Test for successful voting with enough votes (3 votes out of 5)
+        /// Successful voting with enough votes (3 votes out of 5)
         /// </summary>
         [TestMethod]
         public void Voting_EnoughVotes_VotingSuccessful()
@@ -212,7 +212,7 @@ namespace TakeWing.Neo.Multiownable.Tests
         }
 
         /// <summary>
-        /// Test for unsuccessful voting with not enough votes (2 votes out of 5)
+        /// Unsuccessful voting with not enough votes (2 votes out of 5)
         /// </summary>
         [TestMethod]
         public void Voting_NotEnoughVotes_VotingUnsuccessful()
@@ -245,7 +245,7 @@ namespace TakeWing.Neo.Multiownable.Tests
         }
 
         /// <summary>
-        /// Test for unsuccessful voting with not enough votes until Timeout is over
+        /// Unsuccessful voting with not enough votes until Timeout is over
         /// (2 owners managed to vote and 1 did not have time to vote before Timeout is over)
         /// </summary>
         [TestMethod]
@@ -291,7 +291,7 @@ namespace TakeWing.Neo.Multiownable.Tests
         }
 
         /// <summary>
-        /// 
+        /// ???
         /// </summary>
         [TestMethod]
         public void Voting_TimeoutPassedNewVotingStarted_VotingSuccessful()
@@ -363,7 +363,7 @@ namespace TakeWing.Neo.Multiownable.Tests
         }
 
         /// <summary>
-        /// Test for unsuccessful voting with enough votes (4 votes out of 5), but all voting with different arguments
+        /// Unsuccessful voting with enough votes (4 votes out of 5), but all voting with different arguments
         /// </summary>
         [TestMethod]
         public void Voting_DifferentVotingParams_VotingUnsuccessful()
@@ -414,7 +414,7 @@ namespace TakeWing.Neo.Multiownable.Tests
         }
 
         /// <summary>
-        /// Test for unsuccessful voting with enough votes (3 votes out of 5),
+        /// Unsuccessful voting with enough votes (3 votes out of 5),
         /// but one of them managed to pick up a vote back (actually 2 votes out of 5)
         /// </summary>
         [TestMethod]
@@ -470,7 +470,7 @@ namespace TakeWing.Neo.Multiownable.Tests
         }
 
         /// <summary>
-        /// ???
+        /// After Timeout is over, the vote cannot be canceled.
         /// </summary>
         [TestMethod]
         public void CancelVote_CancellationAfterTimeout_CancellationUnsuccessful()
@@ -517,7 +517,7 @@ namespace TakeWing.Neo.Multiownable.Tests
         }
 
         /// <summary>
-        /// ???
+        /// Vote cannot be canceled if you submit different arguments
         /// </summary>
         [TestMethod]
         public void CancelVote_CancellationInAnotherVoting_CancellationUnsuccessful()
@@ -561,7 +561,7 @@ namespace TakeWing.Neo.Multiownable.Tests
         }
 
         /// <summary>
-        /// ???
+        /// Cancellation may reduce the number of votes to zero
         /// </summary>
         [TestMethod]
         public void CancelVote_CancellationToZero_VotingUnsuccessful()
