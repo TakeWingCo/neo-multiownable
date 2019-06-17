@@ -246,7 +246,7 @@ namespace TakeWing.Neo.Multiownable.Tests
 
         /// <summary>
         /// Test for unsuccessful voting with not enough votes until Timeout is over
-        /// (2 owners managed to vote and 1 did not have time out of 5 owners)
+        /// (2 owners managed to vote and 1 did not have time to vote before Timeout is over)
         /// </summary>
         [TestMethod]
         public void Voting_TimeoutPassed_VotingUnsuccessful()
@@ -290,6 +290,9 @@ namespace TakeWing.Neo.Multiownable.Tests
             Assert.IsFalse(result.GetBoolean(), "Voting should not have been successful");
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [TestMethod]
         public void Voting_TimeoutPassedNewVotingStarted_VotingSuccessful()
         {
@@ -359,6 +362,9 @@ namespace TakeWing.Neo.Multiownable.Tests
             Assert.IsTrue(result.GetBoolean(), "Voting should have been successful");
         }
 
+        /// <summary>
+        /// Test for unsuccessful voting with enough votes (4 votes out of 5), but all voting with different arguments
+        /// </summary>
         [TestMethod]
         public void Voting_DifferentVotingParams_VotingUnsuccessful()
         {
@@ -407,6 +413,10 @@ namespace TakeWing.Neo.Multiownable.Tests
             Assert.IsFalse(result.GetBoolean(), "Voting should not have been successful");
         }
 
+        /// <summary>
+        /// Test for unsuccessful voting with enough votes (3 votes out of 5),
+        /// but one of them managed to pick up a vote back (actually 2 votes out of 5)
+        /// </summary>
         [TestMethod]
         public void CancelVote_OneCancellation_VotingUnsuccessful()
         {
@@ -459,6 +469,9 @@ namespace TakeWing.Neo.Multiownable.Tests
             Assert.IsFalse(result.GetBoolean(), "Voting should have not been successful");
         }
 
+        /// <summary>
+        /// ???
+        /// </summary>
         [TestMethod]
         public void CancelVote_CancellationAfterTimeout_CancellationUnsuccessful()
         {
@@ -503,6 +516,9 @@ namespace TakeWing.Neo.Multiownable.Tests
             Assert.IsFalse(result.GetBoolean(), "Cancellation should have failed");
         }
 
+        /// <summary>
+        /// ???
+        /// </summary>
         [TestMethod]
         public void CancelVote_CancellationInAnotherVoting_CancellationUnsuccessful()
         {
@@ -544,6 +560,9 @@ namespace TakeWing.Neo.Multiownable.Tests
             Assert.IsFalse(result.GetBoolean(), "Cancellation should have failed");
         }
 
+        /// <summary>
+        /// ???
+        /// </summary>
         [TestMethod]
         public void CancelVote_CancellationToZero_VotingUnsuccessful()
         {
@@ -587,6 +606,9 @@ namespace TakeWing.Neo.Multiownable.Tests
             Assert.IsFalse(result.GetBoolean(), "Voting should have been unsuccessful");
         }
 
+        /// <summary>
+        /// For GetIndexByOwner request with owner exists, returns index is correct.
+        /// </summary>
         [TestMethod]
         public void GetIndexByOwner_OwnerExists_IndexCorrect()
         {
@@ -607,6 +629,9 @@ namespace TakeWing.Neo.Multiownable.Tests
             Assert.AreEqual(BigInteger.Parse("3"), result.GetBigInteger(), "Index should have been 3");
         }
 
+        /// <summary>
+        /// For GetIndexByOwner request with owner non-exists, returns index = ""
+        /// </summary>
         [TestMethod]
         public void GetIndexByOwner_OwnerNotExists_IndexNull()
         {
@@ -627,6 +652,9 @@ namespace TakeWing.Neo.Multiownable.Tests
             Assert.AreEqual("", result.GetString(), "Index should have been null");
         }
 
+        /// <summary>
+        /// For GetOwnerByIndex request with the correct index, returns owner is correct
+        /// </summary>
         [TestMethod]
         public void GetOwnerByIndex_IndexExists_OwnerCorrect()
         {
@@ -647,6 +675,9 @@ namespace TakeWing.Neo.Multiownable.Tests
             CollectionAssert.AreEqual(keyPairs[1].CompressedPublicKey, result.GetByteArray(), "Owner should have been correct");
         }
 
+        /// <summary>
+        /// For GetOwnerByIndex request with the incorrect index, returns owner = ""
+        /// </summary>
         [TestMethod]
         public void GetOwnerByIndex_IndexNotExists_OwnerNull()
         {
