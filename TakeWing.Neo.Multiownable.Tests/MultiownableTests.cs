@@ -11,6 +11,9 @@ namespace TakeWing.Neo.Multiownable.Tests
     [TestClass]
     public class Multiownable
     {
+        /// <summary>
+        /// Information to unit test
+        /// </summary>
         public TestContext TestContext
         {
             get
@@ -24,16 +27,27 @@ namespace TakeWing.Neo.Multiownable.Tests
             }
         }
 
+        /// <summary>
+        /// Debugger for tests
+        /// </summary>
         private DebugManager Debugger;
         private TestContext TestContextInstance;
         
         private static KeyPair[] keyPairs;
 
+        /// <summary>
+        /// Write message to TestContext
+        /// </summary>
+        /// <param name="msg">Message</param>
         private void OnLogMessage(System.String msg)
         {
             TestContext.WriteLine(msg);
         }
 
+        /// <summary>
+        /// Sets 5 test KeyPairs
+        /// </summary>
+        /// <param name="testContext">Not used</param>
         [ClassInitialize]
         public static void Setup(TestContext testContext)
         {
@@ -45,6 +59,10 @@ namespace TakeWing.Neo.Multiownable.Tests
             keyPairs[4] = DebuggerUtils.GetKeyFromString("132a7996a6183221d21a767b77fe3afc331e5fe553d28a633364ae951a1fa841");
         }
 
+        /// <summary>
+        /// Load test contract to Debugger
+        /// Choice KeyPair[0] to use
+        /// </summary>
         [TestInitialize]
         public void TestSetup()
         {
@@ -55,6 +73,9 @@ namespace TakeWing.Neo.Multiownable.Tests
             Runtime.OnLogMessage = OnLogMessage;
         }
 
+        /// <summary>
+        /// Successful execution of TransferOwnership for "zero generation"
+        /// </summary>
         [TestMethod]
         public void TransferOwnership_ZeroGeneration_TransferSuccessful()
         {
@@ -77,6 +98,14 @@ namespace TakeWing.Neo.Multiownable.Tests
             Assert.IsTrue(result.GetBoolean(), "Transfer should have been successful");
         }
 
+        /// <summary>
+        /// Successful execution of TransferOwnership for "non-zero generation" and check if correct owner:
+        ///     Run TransferOwnership_ZeroGeneration_TransferSuccessful()
+        ///     Running TransferOwnership in turn for 0, 1 and 2 KeyPairs as an initiator and KeyPairs[2] as owner
+        ///     Check if correct number of owners.
+        ///     Check if correct owner.
+        ///     Check if transferring is successful.
+        /// </summary>
         [TestMethod]
         public void TransferOwnership_NonZeroGeneration_TransferSuccessful()
         {
@@ -140,6 +169,9 @@ namespace TakeWing.Neo.Multiownable.Tests
             Assert.IsTrue(result.GetBoolean(), "Transfer should have been successful");
         }
 
+        /// <summary>
+        /// Successful voting with enough votes (3 votes out of 5)
+        /// </summary>
         [TestMethod]
         public void Voting_EnoughVotes_VotingSuccessful()
         {
@@ -179,6 +211,9 @@ namespace TakeWing.Neo.Multiownable.Tests
             Assert.IsTrue(result.GetBoolean(), "Voting should have been successful");
         }
 
+        /// <summary>
+        /// Unsuccessful voting with not enough votes (2 votes out of 5)
+        /// </summary>
         [TestMethod]
         public void Voting_NotEnoughVotes_VotingUnsuccessful()
         {
@@ -209,6 +244,10 @@ namespace TakeWing.Neo.Multiownable.Tests
             Assert.IsFalse(result.GetBoolean(), "Voting should not have been successful");
         }
 
+        /// <summary>
+        /// Unsuccessful voting with not enough votes until Timeout is over
+        /// (2 owners managed to vote and 1 did not have time to vote before Timeout is over)
+        /// </summary>
         [TestMethod]
         public void Voting_TimeoutPassed_VotingUnsuccessful()
         {
@@ -251,6 +290,9 @@ namespace TakeWing.Neo.Multiownable.Tests
             Assert.IsFalse(result.GetBoolean(), "Voting should not have been successful");
         }
 
+        /// <summary>
+        /// Successful voting at the end of the timeout and after that a sufficient number of votes
+        /// </summary>
         [TestMethod]
         public void Voting_TimeoutPassedNewVotingStarted_VotingSuccessful()
         {
@@ -320,6 +362,9 @@ namespace TakeWing.Neo.Multiownable.Tests
             Assert.IsTrue(result.GetBoolean(), "Voting should have been successful");
         }
 
+        /// <summary>
+        /// Unsuccessful voting with enough votes (4 votes out of 5), but all voting with different arguments
+        /// </summary>
         [TestMethod]
         public void Voting_DifferentVotingParams_VotingUnsuccessful()
         {
@@ -368,6 +413,10 @@ namespace TakeWing.Neo.Multiownable.Tests
             Assert.IsFalse(result.GetBoolean(), "Voting should not have been successful");
         }
 
+        /// <summary>
+        /// Unsuccessful voting with enough votes (3 votes out of 5),
+        /// but one of them managed to pick up a vote back (actually 2 votes out of 5)
+        /// </summary>
         [TestMethod]
         public void CancelVote_OneCancellation_VotingUnsuccessful()
         {
@@ -420,6 +469,9 @@ namespace TakeWing.Neo.Multiownable.Tests
             Assert.IsFalse(result.GetBoolean(), "Voting should have not been successful");
         }
 
+        /// <summary>
+        /// After Timeout is over, the vote cannot be canceled.
+        /// </summary>
         [TestMethod]
         public void CancelVote_CancellationAfterTimeout_CancellationUnsuccessful()
         {
@@ -464,6 +516,9 @@ namespace TakeWing.Neo.Multiownable.Tests
             Assert.IsFalse(result.GetBoolean(), "Cancellation should have failed");
         }
 
+        /// <summary>
+        /// Vote cannot be canceled if you submit different arguments
+        /// </summary>
         [TestMethod]
         public void CancelVote_CancellationInAnotherVoting_CancellationUnsuccessful()
         {
@@ -505,6 +560,9 @@ namespace TakeWing.Neo.Multiownable.Tests
             Assert.IsFalse(result.GetBoolean(), "Cancellation should have failed");
         }
 
+        /// <summary>
+        /// Cancellation may reduce the number of votes to zero
+        /// </summary>
         [TestMethod]
         public void CancelVote_CancellationToZero_VotingUnsuccessful()
         {
@@ -548,6 +606,9 @@ namespace TakeWing.Neo.Multiownable.Tests
             Assert.IsFalse(result.GetBoolean(), "Voting should have been unsuccessful");
         }
 
+        /// <summary>
+        /// For GetIndexByOwner request with owner exists, returns index is correct
+        /// </summary>
         [TestMethod]
         public void GetIndexByOwner_OwnerExists_IndexCorrect()
         {
@@ -568,6 +629,9 @@ namespace TakeWing.Neo.Multiownable.Tests
             Assert.AreEqual(BigInteger.Parse("3"), result.GetBigInteger(), "Index should have been 3");
         }
 
+        /// <summary>
+        /// For GetIndexByOwner request with owner non-exists, returns index = ""
+        /// </summary>
         [TestMethod]
         public void GetIndexByOwner_OwnerNotExists_IndexNull()
         {
@@ -588,6 +652,9 @@ namespace TakeWing.Neo.Multiownable.Tests
             Assert.AreEqual("", result.GetString(), "Index should have been null");
         }
 
+        /// <summary>
+        /// For GetOwnerByIndex request with the correct index, returns owner is correct
+        /// </summary>
         [TestMethod]
         public void GetOwnerByIndex_IndexExists_OwnerCorrect()
         {
@@ -608,6 +675,9 @@ namespace TakeWing.Neo.Multiownable.Tests
             CollectionAssert.AreEqual(keyPairs[1].CompressedPublicKey, result.GetByteArray(), "Owner should have been correct");
         }
 
+        /// <summary>
+        /// For GetOwnerByIndex request with the incorrect index, returns owner = ""
+        /// </summary>
         [TestMethod]
         public void GetOwnerByIndex_IndexNotExists_OwnerNull()
         {
@@ -628,6 +698,9 @@ namespace TakeWing.Neo.Multiownable.Tests
             Assert.AreEqual("", result.GetString(), "Owner should have been null");
         }
 
+        /// <summary>
+        /// For IsOwner request with owner exists, returns true
+        /// </summary>
         [TestMethod]
         public void IsOwnerTest_PublicKeyOwner_Owner()
         {
@@ -648,6 +721,9 @@ namespace TakeWing.Neo.Multiownable.Tests
             Assert.IsTrue(result.GetBoolean(), "Public key should have been considered owner's");
         }
 
+        /// <summary>
+        /// For IsOwner request with owner non-exists, returns false
+        /// </summary>
         [TestMethod]
         public void IsOwnerTest_PublicKeyNotOwner_NotOwner()
         {
@@ -668,6 +744,9 @@ namespace TakeWing.Neo.Multiownable.Tests
             Assert.IsFalse(result.GetBoolean(), "Public key should not have been considered owner's");
         }
 
+        /// <summary>
+        /// GetAllOwners request correctly returns all owners
+        /// </summary>
         [TestMethod]
         public void GetAllOwners_KnownOwners_OwnersCorrect()
         {
@@ -689,6 +768,9 @@ namespace TakeWing.Neo.Multiownable.Tests
                 CollectionAssert.AreEqual(keyPairs[i].CompressedPublicKey, result[i].GetByteArray(), "Owner should have been correct");
         }
 
+        /// <summary>
+        /// GetGenerationOfOwners request correctly returns generation (= 1) for zero-generation.
+        /// </summary>
         [TestMethod]
         public void GetGenerationOfOwners_FirstGeneration_GenerationCorrect()
         {
@@ -709,6 +791,9 @@ namespace TakeWing.Neo.Multiownable.Tests
             Assert.AreEqual(BigInteger.Parse("1"), result.GetBigInteger(), "Generation of owners should have been 1");
         }
 
+        /// <summary>
+        /// GetNumberOfOwners request correctly returns the number of owners (=5)
+        /// </summary>
         [TestMethod]
         public void GetNumberOfOwners_KnownNumberOfOwners_NumberOfOwnersCorrect()
         {
