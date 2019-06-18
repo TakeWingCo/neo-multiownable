@@ -7,23 +7,6 @@ using Neo.SmartContract.Framework.Services.Neo;
 
 namespace TakeWing.Neo.Multiownable
 {
-    public class OwnershipTransferredEventArgs : EventArgs {
-        public byte[][] previousOwners;
-        public byte[][] newOwners;
-    }
-    public class OperationEventArgs : EventArgs {
-        public byte[] initiator;
-        public int votes;
-        public int ownerCount;
-        public byte[] operation;//???
-    }
-    public event EventHandler<OwnershipTransferredEventArgs> OwnershipTransferred;
-    public event EventHandler<OperationEventArgs> OperationCreated;
-    public event EventHandler<OperationEventArgs> OperationUpvoted;
-    public event EventHandler<OperationEventArgs> OperationPerformed;
-    public event EventHandler<OperationEventArgs> OperationDownvoted;
-    public event EventHandler<OperationEventArgs> OperationCancelled;
-
 	/// <summary>
 	/// Library for easy multisig and consensus.
 	/// </summary>
@@ -118,18 +101,14 @@ namespace TakeWing.Neo.Multiownable
 		/// <returns>Return true after successful transfer, else false</returns>
 		public static Boolean TransferOwnership(Byte[] initiator, Byte[][] newOwners)
 		{
-            // Event arguments
-            OwnershipTransferredEventArgs args = new OwnershipTransferredEventArgs();
-
 			UInt64 generationOfOwners = GetGenerationOfOwners();
 			if (generationOfOwners > 0)
 			{
 				byte ownersCount = GetNumberOfOwners();
 				if (!IsAcceptedBySomeOwners(initiator, "Boolean TransferOwnership(Byte[], Byte[][])", (byte)((ownersCount / 2) + 1), 1200, newOwners))
 					return false;
-                
-				// Clear current list of owners and save to args.
-                args.previousOwners = new byte[ownersCount][];
+
+				// Clear current list of owners.
 				for (byte i = 1; i <= ownersCount; i++)
 				{
 					var keyForOwners = "Owners".AsByteArray();
@@ -140,14 +119,10 @@ namespace TakeWing.Neo.Multiownable
 
 					Storage.Delete(Storage.CurrentContext, keyForOwners);
 					Storage.Delete(Storage.CurrentContext, keyForIndexes);
-
-                    args.previousOwners[i - 1] = GetOwnerByIndex(i);// need copy?
 				}
 			}
 
-			// Set new list of owners and save to args.
-            //args.newOwners = newOwners; // if don't need copy, use it
-            args.newOwners = new byte[newOwners.Length][];// if need copy, use it
+			// Set new list of owners.
 			for (byte i = 1; i <= newOwners.Length; i++)
 			{
 				var keyForOwners = "Owners".AsByteArray();
@@ -158,8 +133,6 @@ namespace TakeWing.Neo.Multiownable
 
 				Storage.Put(Storage.CurrentContext, keyForOwners, newOwners[i - 1]);
 				Storage.Put(Storage.CurrentContext, keyForIndexes, i);
-
-                args.newOwners[i - 1] = (byte[])(newOwners[i - 1].Clone());// if need copy, use it
 			}
 
 			// Change generation.
@@ -168,9 +141,6 @@ namespace TakeWing.Neo.Multiownable
 
 			// Change NumberOfOwners
 			Storage.Put(Storage.CurrentContext, "NumberOfOwners", newOwners.Length);
-
-            // Call event
-            OwnershipTransferred(this, args);
 
 			return true;
 		}
