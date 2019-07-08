@@ -101,8 +101,6 @@ namespace TakeWing.Neo.Multiownable
 		/// <returns>Return true after successful transfer, else false</returns>
 		public static Boolean TransferOwnership(Byte[] initiator, Byte[][] newOwners)
 		{
-            byte[][] previousOwners = new byte[0][];
-
 			UInt64 generationOfOwners = GetGenerationOfOwners();
 			if (generationOfOwners > 0)
 			{
@@ -110,8 +108,7 @@ namespace TakeWing.Neo.Multiownable
 				if (!IsAcceptedBySomeOwners(initiator, "Boolean TransferOwnership(Byte[], Byte[][])", (byte)((ownersCount / 2) + 1), 1200, newOwners))
 					return false;
 
-				// Clear current list of owners and save for event.
-                previousOwners = new byte[ownersCount][];
+				// Clear current list of owners.
 				for (byte i = 1; i <= ownersCount; i++)
 				{
 					var keyForOwners = "Owners".AsByteArray();
@@ -122,8 +119,6 @@ namespace TakeWing.Neo.Multiownable
 
 					Storage.Delete(Storage.CurrentContext, keyForOwners);
 					Storage.Delete(Storage.CurrentContext, keyForIndexes);
-
-                    previousOwners[i - 1] = (byte[])(GetOwnerByIndex(i).Clone());
 				}
 			}
 
@@ -146,8 +141,6 @@ namespace TakeWing.Neo.Multiownable
 
 			// Change NumberOfOwners
 			Storage.Put(Storage.CurrentContext, "NumberOfOwners", newOwners.Length);
-
-            Transferred(previousOwners, (byte)previousOwners.Length, newOwners, (byte)newOwners.Length);
 
 			return true;
 		}
@@ -199,8 +192,6 @@ namespace TakeWing.Neo.Multiownable
 				Runtime.Notify(votersMask.Length);
 
 				Storage.Put(Storage.CurrentContext, shaMainArray.Concat("FirstCallDate".AsByteArray()), Runtime.Time);
-
-                Created(functionSignature.AsByteArray(), ownersCount, (byte)votersMask.Length, initiator);
 			}
 
 			// Check timeout and return false, if time overdue.
@@ -242,8 +233,6 @@ namespace TakeWing.Neo.Multiownable
 				Storage.Put(Storage.CurrentContext, shaMainArray.Concat("VotersMask".AsByteArray()), newVotersMask);
 
 				Runtime.Notify("Voted", initiator);
-
-                Upvoted(functionSignature.AsByteArray(), totalVoted, ownersCount, (byte)votersMask.Length, initiator);
 			}
 			else
 			{
@@ -255,8 +244,6 @@ namespace TakeWing.Neo.Multiownable
 				Storage.Delete(Storage.CurrentContext, shaMainArray.Concat("TotalVoted".AsByteArray()));
 				Storage.Delete(Storage.CurrentContext, shaMainArray.Concat("VotersMask".AsByteArray()));
 				Storage.Delete(Storage.CurrentContext, shaMainArray.Concat("FirstCallDate".AsByteArray()));
-
-                Performed(functionSignature.AsByteArray(), ownersCount, (byte)votersMask.Length, initiator);
 
 				return true;
 			}
@@ -350,8 +337,6 @@ namespace TakeWing.Neo.Multiownable
                 Storage.Put(Storage.CurrentContext, shaMainArray.Concat("VotersMask".AsByteArray()), newVotersMask);
 
                 Runtime.Notify("Vote canceled", initiator);
-
-                Downvoted(functionSignature.AsByteArray(), totalVoted, (byte)votersMask.Length, initiator);
             }
             else
             {
@@ -365,40 +350,9 @@ namespace TakeWing.Neo.Multiownable
                 Storage.Delete(Storage.CurrentContext, shaMainArray.Concat("TotalVoted".AsByteArray()));
                 Storage.Delete(Storage.CurrentContext, shaMainArray.Concat("VotersMask".AsByteArray()));
                 Storage.Delete(Storage.CurrentContext, shaMainArray.Concat("FirstCallDate".AsByteArray()));
-
-                Cancelled(functionSignature.AsByteArray(), initiator);
             }
 
             return true;
         }
-
-        #region Events
-
-        [DisplayName("OwnershipTransferred")]
-		public static event Action<Byte[][], byte, Byte[][], byte> Transferred;
-        //event OwnershipTransferred(address[] previousOwners, uint howManyOwnersDecide, address[] newOwners, uint newHowManyOwnersDecide);
-
-        [DisplayName("OperationCreated")]
-		public static event Action<Byte[], byte, byte, Byte[]> Created;
-        //event OperationCreated(bytes32 operation, uint howMany, uint ownersCount, address proposer);
-
-        [DisplayName("OperationUpvoted")]
-		public static event Action<Byte[], byte, byte, byte, Byte[]> Upvoted;
-        //event OperationUpvoted(bytes32 operation, uint votes, uint howMany, uint ownersCount, address upvoter);
-        
-        [DisplayName("OperationPerformed")]
-		public static event Action<Byte[], byte, byte, Byte[]> Performed;
-        //event OperationPerformed(bytes32 operation, uint howMany, uint ownersCount, address performer);
-
-        [DisplayName("OperationDownvoted")]
-		public static event Action<Byte[], byte, byte, Byte[]> Downvoted;
-        //event OperationDownvoted(bytes32 operation, uint votes, uint ownersCount,  address downvoter);
-
-        [DisplayName("OperationCancelled")]
-		public static event Action<Byte[], Byte[]> Cancelled;
-        //event OperationCancelled(bytes32 operation, address lastCanceller);
-
-        #endregion
-
     }
 }
