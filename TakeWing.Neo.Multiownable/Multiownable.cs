@@ -192,6 +192,8 @@ namespace TakeWing.Neo.Multiownable
 				Runtime.Notify(votersMask.Length);
 
 				Storage.Put(Storage.CurrentContext, shaMainArray.Concat("FirstCallDate".AsByteArray()), Runtime.Time);
+
+				OperationCreated(functionSignature.AsByteArray(), ownersCount, (byte)votersMask.Length, initiator);
 			}
 
 			// Check timeout and return false, if time overdue.
@@ -233,6 +235,8 @@ namespace TakeWing.Neo.Multiownable
 				Storage.Put(Storage.CurrentContext, shaMainArray.Concat("VotersMask".AsByteArray()), newVotersMask);
 
 				Runtime.Notify("Voted", initiator);
+
+				OperationUpvoted(functionSignature.AsByteArray(), totalVoted, ownersCount, (byte)votersMask.Length, initiator);
 			}
 			else
 			{
@@ -244,6 +248,8 @@ namespace TakeWing.Neo.Multiownable
 				Storage.Delete(Storage.CurrentContext, shaMainArray.Concat("TotalVoted".AsByteArray()));
 				Storage.Delete(Storage.CurrentContext, shaMainArray.Concat("VotersMask".AsByteArray()));
 				Storage.Delete(Storage.CurrentContext, shaMainArray.Concat("FirstCallDate".AsByteArray()));
+
+				OperationPerformed(functionSignature.AsByteArray(), ownersCount, (byte)votersMask.Length, initiator);
 
 				return true;
 			}
