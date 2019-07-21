@@ -354,5 +354,17 @@ namespace TakeWing.Neo.Multiownable
 
             return true;
         }
-    }
+
+		public static event Action<Byte[][], Byte, Byte[][], Byte> OwnershipTransferred;
+
+		public static event Action<Byte[], Byte, Byte, Byte[]> OperationCreated;
+
+		public static event Action<Byte[], Byte, Byte, Byte, Byte[]> OperationUpvoted;
+
+		public static event Action<Byte[], Byte, Byte, Byte[]> OperationPerformed;
+
+		public static event Action<Byte[], Byte, Byte, Byte[]> OperationDownvoted;
+
+		public static event Action<Byte[], Byte[]> OperationCancelled;
+	}
 }
